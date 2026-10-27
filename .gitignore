@@ -1,0 +1,16 @@
+# Ambiente virtual
+venv/
+.env
+
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos sensíveis
+cookies
+cookies.txt
+*.txt
+
+# Pastas de saída e temporárias
+temp/
+cortes_prontos/
