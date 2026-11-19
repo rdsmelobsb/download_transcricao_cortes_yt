@@ -1,23 +1,40 @@
-# Download, Transcrição e Cortes de Vídeos do YouTube 🎬✂️
+# Pipeline Automatizado: Download, Transcrição, Curadoria IA e Cortes de Vídeos 🎬✂️🤖
 
-Pipeline em Python para automatizar o fluxo completo de produção de cortes e conteúdo em vídeo: download do YouTube em alta resolução, transcrição de áudio para legendas `.srt` com o OpenAI Whisper e extração automatizada de cortes (proporção original ou vertical 9:16 para Shorts/Reels/TikTok) utilizando FFmpeg.
+Pipeline completo em Python para automatizar a produção de cortes de vídeos para **YouTube Shorts** e **Kwai**: monitoramento automático de canais do YouTube, download em alta resolução (`yt-dlp`), transcrição de áudio para legendas `.srt` (`OpenAI Whisper`), curadoria automatizada de cortes e textos de publicação via **Gemini API**, e renderização com **FFmpeg**.
 
 ---
 
 ## 🚀 Funcionalidades
 
-* **Download Automatizado (`download.py`):** Baixa vídeos do YouTube combinando automaticamente as melhores faixas de vídeo e áudio via `yt-dlp`. Suporta autenticação opcional via arquivo `cookies.txt` para vídeos com restrição de idade ou validação de bot.
-* **Geração de Legendas SRT (`gerador_srt.py`):** Transcreve o áudio de arquivos de vídeo locais gerando arquivos `.srt` compatíveis com qualquer player ou editor, utilizando os modelos Whisper da OpenAI.
-* **Corte e Enquadramento (`cortes.py`):** Recorta trechos exatos baseados em timestamps com opção de exportação em proporção original ou enquadramento vertical 9:16 (1080x1920) pronto para redes sociais.
+1. **Coleta e Monitoramento de Canais (`download.py` & `canais.json`):**
+   * **Modo Monitoramento (`--monitor`):** Verifica rotineiramente uma lista de canais configurados em `canais.json`, ignora transmissões ao vivo em andamento (`is_live`), filtra vídeos por duração mínima/máxima e baixa apenas vídeos inéditos na melhor qualidade (`bestvideo+bestaudio`).
+   * **Histórico Anti-Duplicidade:** Registra cada vídeo baixado em `historico_downloads.txt` (`download_archive` do `yt-dlp`) para nunca baixar o mesmo vídeo duas vezes.
+   * **Modo Manual:** Permite colar o link de um vídeo avulso diretamente no terminal.
+   * **Suporte a Autenticação e Desafio JS:** Compatível com `cookies.txt` e resolução automática de desafios JavaScript (`n challenge`) via Node.js + EJS.
+
+2. **Transcrição Automatizada em Lote (`gerador_srt.py`):**
+   * Vasculha automaticamente a pasta `temp/` (e a raiz) em busca de vídeos que ainda não possuem arquivo `.srt` correspondente.
+   * Carrega o modelo do **OpenAI Whisper** uma única vez e transcreve todos os vídeos pendentes em sequência (em português), salvando o `.srt` ao lado de cada vídeo.
+
+3. **Curadoria de Cortes e Kit de Publicação via Gemini API (`analisar_srt.py`):**
+   * Lê as transcrições `.srt` em `temp/`, pré-anota cada timestamp com o valor exato em segundos decimais (`float`) para evitar erros de cálculo e envia ao modelo `gemini-2.5-flash`.
+   * Seleciona os **3 melhores cortes** por vídeo (45s a 100s, com gancho forte nos primeiros 3 segundos) distribuídos nos horários estratégicos da grade diária (`11:30`, `17:30` e `20:30`).
+   * Atualiza automaticamente a lista `TAREFAS_DE_CORTE` dentro do `cortes.py`.
+   * Gera o manifesto `temp/tarefas_corte.json` e o **Kit de Publicação** completo em `cortes_prontos/kit_publicacao.md` (com Título de Capa, Texto de Publicação em 4 partes e 5 Hashtags).
+
+4. **Recorte e Enquadramento Vertical (`cortes.py`):**
+   * Localiza automaticamente os vídeos de origem dentro da pasta `temp/` (pelo nome completo ou ID do vídeo).
+   * Oferece **5 modos de renderização via FFmpeg**, incluindo formatos verticais `9:16` (`1080x1920` com respiro ou tela cheia) e filtros de remoção de marca d'água (`delogo`).
 
 ---
 
 ## 📋 Pré-requisitos
 
 1. **Python 3.10 ou superior**
-2. **FFmpeg instalado no sistema operacional e adicionado ao `PATH`:**
+2. **Node.js** instalado no sistema (utilizado pelo `yt-dlp` para resolver desafios JavaScript do player do YouTube ao usar `cookies.txt`).
+3. **FFmpeg** instalado no sistema operacional e adicionado ao `PATH`:
    * **Windows:**
-     ```bash
+     ```powershell
      winget install Gyan.FFmpeg
      ```
    * **Linux (Ubuntu/Debian):**
@@ -33,17 +50,17 @@ Pipeline em Python para automatizar o fluxo completo de produção de cortes e c
 
 ## 🛠️ Instalação e Configuração
 
-1. Clone o repositório ou acesse a pasta do projeto:
+1. **Clone o repositório e acesse a pasta do projeto:**
    ```bash
    git clone https://github.com/rdsmelobsb/download_transcricao_cortes_yt.git
    cd download_transcricao_cortes_yt
    ```
 
-2. Crie e ative um ambiente virtual:
-   * **Windows:**
-     ```bash
+2. **Crie e ative o ambiente virtual (`venv`):**
+   * **Windows (PowerShell):**
+     ```powershell
      python -m venv venv
-     .\venv\Scripts\activate
+     .\venv\Scripts\Activate.ps1
      ```
    * **Linux / macOS:**
      ```bash
@@ -51,88 +68,171 @@ Pipeline em Python para automatizar o fluxo completo de produção de cortes e c
      source venv/bin/activate
      ```
 
-3. Instale as bibliotecas necessárias:
+3. **Instale as dependências:**
    ```bash
-   pip install yt-dlp openai-whisper ffmpeg-python
+   pip install yt-dlp openai-whisper ffmpeg-python google-generativeai python-dotenv
+   ```
+   *(Opcional)* Para acelerar a transcrição Whisper com GPU NVIDIA (CUDA):
+   ```bash
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
    ```
 
-*(Opcional)* Para acelerar a transcrição com GPU NVIDIA (CUDA):
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-```
+4. **Configure a chave da API do Gemini (`.env`):**
+   Crie um arquivo `.env` na raiz do projeto com a sua chave do [Google AI Studio](https://aistudio.google.com/):
+   ```env
+   GEMINI_API_KEY=AIzaSySuaChaveAqui...
+   ```
 
 ---
 
-## 📖 Instruções de Uso
+## 📖 Fluxo de Uso Passo a Passo
 
-### 1. Download de Vídeos (`download.py`)
+### Etapa 1: Download / Monitoramento de Vídeos (`download.py`)
 
-Execute o script e cole o link do vídeo:
-```bash
+#### A) Modo Monitoramento Automático (`canais.json`)
+Edite o arquivo `canais.json` na raiz do projeto com os canais que deseja monitorar:
+
+```json
+[
+  {
+    "nome": "UOL",
+    "url": "https://www.youtube.com/@uol/videos",
+    "ativo": true,
+    "max_recentes": 3,
+    "duracao_min_segundos": 180,
+    "duracao_max_segundos": null
+  },
+  {
+    "nome": "MIDIA NINJA",
+    "url": "https://www.youtube.com/channel/UCwefw3viiiaxprsV6jgJvEA/videos",
+    "ativo": true,
+    "max_recentes": 3,
+    "duracao_min_segundos": 180,
+    "duracao_max_segundos": null
+  }
+]
+```
+
+> **Dica:** Caso algum handle `@canal/videos` retorne erro `404` no YouTube, utilize a URL canônica com o ID do canal (`https://www.youtube.com/channel/<CHANNEL_ID>/videos`).
+
+* **Simular verificação (sem baixar arquivos):**
+  ```powershell
+  python download.py --monitor --dry-run
+  ```
+* **Baixar vídeos novos dos canais ativos:**
+  ```powershell
+  python download.py --monitor
+  ```
+
+#### B) Modo Manual (Vídeo Avulso)
+```powershell
 python download.py
 ```
-* O vídeo será salvo na pasta atual (ou subpasta `temp`) no formato `<job_id>_raw.mp4`.
-* Se o vídeo exigir login ou validação, adicione o arquivo `cookies.txt` na mesma pasta do script.
+Cole a URL do vídeo quando solicitado. Os vídeos baixados ficam salvos na pasta `temp/`.
 
 ---
 
-### 2. Geração de Legendas (`gerador_srt.py`)
+### Etapa 2: Geração Automática de Legendas (`gerador_srt.py`)
 
-Gera o arquivo de legendas `.srt` a partir do áudio do vídeo:
+Transcreve automaticamente todos os vídeos da pasta `temp/` que ainda não possuem arquivo `.srt`:
 
-* **Modo padrão** (procura o primeiro vídeo disponível na pasta e usa o modelo `base`):
-  ```bash
+* **Modo automático (modelo padrão `base`):**
+  ```powershell
   python gerador_srt.py
   ```
-
-* **Passando parâmetros customizados:**
-  ```bash
+* **Modo automático escolhendo o modelo Whisper (`tiny`, `base`, `small`, `medium`, `large`, `turbo`):**
+  ```powershell
+  python gerador_srt.py small
+  ```
+* **Transcrever um vídeo específico:**
+  ```powershell
   python gerador_srt.py nome_do_video.mp4 small
   ```
-  *Modelos Whisper disponíveis:* `tiny`, `base`, `small`, `medium`, `large`.
 
 ---
 
-### 3. Execução dos Cortes (`cortes.py`)
+### Etapa 3: Análise do `.srt` e Curadoria de Cortes com IA (`analisar_srt.py`)
 
-1. Edite o array `TAREFAS_DE_CORTE` dentro de `cortes.py` informando os tempos em segundos:
-   ```python
-   TAREFAS_DE_CORTE = [
-       {
-           "id": 1,
-           "nome": "Meu Primeiro Corte",
-           "video_path": "video_exemplo.mp4",
-           "start": 120.000,  # 02:00
-           "end": 180.000     # 03:00
-       }
-   ]
-   ```
+Analisa as transcrições `.srt` em `temp/` via Gemini API, atualiza automaticamente `TAREFAS_DE_CORTE` dentro de `cortes.py` e gera o Kit de Publicação em `cortes_prontos/kit_publicacao.md`:
 
-2. Execute o script:
-   ```bash
-   python cortes.py
-   ```
+* **Modo interativo** (lista os `.srt` de `temp/`, indicando quais são `[NOVO]` ou `[JÁ ANALISADO]`):
+  ```powershell
+  python analisar_srt.py
+  ```
+* **Modo 100% automático em lote** (processa todos os `.srt` inéditos sem confirmação manual):
+  ```powershell
+  python analisar_srt.py --novos
+  ```
+* **Analisar um vídeo específico (por nome ou ID do YouTube):**
+  ```powershell
+  python analisar_srt.py 5SJYESoWnvI
+  ```
 
-3. Selecione o formato no prompt interativo:
-   * `[1]` **Vertical (9:16 - 1080x1920):** Formato otimizado para Shorts/Reels/TikTok.
-   * `[2]` **Formato original:** Mantém as dimensões de captura do vídeo base.
+**Saídas geradas automaticamente por esta etapa:**
+1. Atualização da variável `TAREFAS_DE_CORTE` em `cortes.py`.
+2. Manifesto estruturado em `temp/tarefas_corte.json`.
+3. Documento `cortes_prontos/kit_publicacao.md` contendo para cada corte:
+   * Horário estratégico sugerido (`11:30`, `17:30`, `20:30`)
+   * Título otimizado (SEO/retenção)
+   * Título de capa / tela com selo de impacto
+   * Texto da publicação estruturado em 4 blocos (contextualização, citação, fecho analítico e CTA)
+   * 5 hashtags estratégicas
 
-Os vídeos finais serão renderizados na pasta `cortes_prontos/`.
+---
+
+### Etapa 4: Renderização dos Cortes (`cortes.py`)
+
+Com o `TAREFAS_DE_CORTE` atualizado, execute:
+
+```powershell
+python cortes.py
+```
+
+Escolha um dos **5 modos de corte** no menu interativo:
+* `[1]` **Vertical intermediário (9:16 - 1080x1920 com respiro/faixas):** Ideal para entrevistas e planos abertos onde cortar as laterais perderia contexto.
+* `[2]` **Formato original:** Mantém a proporção original do vídeo, recortando apenas início e fim.
+* `[3]` **Remover/Borrar marca d'água (`delogo`):** Aplica filtro de desfoque em marcas d'água centrais/rodapé.
+* `[4]` **Vertical intermediário + Borrar marca d'água:** Combina o enquadramento do modo `[1]` com os filtros `delogo` do modo `[3]`.
+* `[5]` **Vertical TELA CHEIA (9:16 puro - 1080x1920 sem faixas pretas):** Preenche toda a tela vertical. Ideal para enquadramentos centralizados.
+
+Os vídeos finais são salvos em `cortes_prontos/`.
+
+---
+
+## ⏰ Agendamento no Windows (Task Scheduler)
+
+Para executar o monitoramento de canais automaticamente em horários fixos ou a cada *X* horas no **Agendador de Tarefas do Windows** (`taskschd.msc`):
+
+* **Programa/script:**
+  `C:\caminho\para\download_transcricao_cortes_yt\venv\Scripts\python.exe`
+* **Adicione argumentos:**
+  `download.py --monitor`
+* **Iniciar em:**
+  `C:\caminho\para\download_transcricao_cortes_yt`
 
 ---
 
 ## 📁 Estrutura de Arquivos
 
 ```text
-├── cortes.py            # Recorte e renderização via FFmpeg
-├── download.py          # Download com resolução máxima via yt-dlp
-├── gerador_srt.py       # Transcrição de áudio e geração de SRT via Whisper
-├── .gitignore           # Exclusão de venv, temporários e credenciais
-└── README.md            # Documentação do projeto
+├── .agent/skills/                  # Skills e diretrizes operacionais do agente IA
+├── cortes_prontos/                 # Vídeos finais renderizados e kit_publicacao.md (ignorado no Git)
+├── temp/                           # Vídeos brutos (.mp4), legendas (.srt) e tarefas_corte.json (ignorado no Git)
+├── analisar_srt.py                 # Curadoria de cortes e kit de publicação via Gemini API
+├── canais.json                     # Configuração de canais monitorados e filtros de duração
+├── cortes.py                       # Recorte e enquadramento de vídeo via FFmpeg
+├── download.py                     # Download manual e monitoramento automático via yt-dlp
+├── gerador_srt.py                  # Transcrição automática de áudio para SRT via Whisper
+├── .env                            # Chave GEMINI_API_KEY (ignorado no Git)
+├── cookies.txt                     # Cookies de autenticação do YouTube (ignorado no Git)
+├── historico_downloads.txt         # Controle de vídeos já baixados (ignorado no Git)
+├── historico_srt_analisados.txt    # Controle de transcrições já analisadas (ignorado no Git)
+├── .gitignore                      # Regras de exclusão do Git
+└── README.md                       # Documentação do projeto
 ```
 
 ---
 
-## 🔒 Segurança
+## 🔒 Segurança e Versionamento
 
-Arquivos de sessão como `cookies.txt`, diretórios de ambientes virtuais (`venv/`) e mídias geradas (`cortes_prontos/`) estão listados no `.gitignore` e não devem ser versionados publicamente.
+Arquivos sensíveis e temporários como `.env`, `cookies.txt`, arquivos de histórico (`*.txt`), ambiente virtual (`venv/`), pasta de trabalho (`temp/`) e vídeos renderizados (`cortes_prontos/`) estão configurados no `.gitignore` para não serem enviados ao repositório público.

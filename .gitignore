@@ -11,6 +11,8 @@ cookies
 cookies.txt
 *.txt
 
-# Pastas de saída e temporárias
+# Pastas de saída, mídias e temporárias
 temp/
 cortes_prontos/
+*.mp4
+*.srt

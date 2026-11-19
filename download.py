@@ -1,5 +1,8 @@
+import argparse
+import json
 import uuid
 from pathlib import Path
+from typing import Optional
 import yt_dlp
 
 # =====================================================================
@@ -17,12 +20,65 @@ else:
     TEMP_DIR = BASE_DIR / "temp"
     TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
-# Define o caminho do arquivo de cookies na mesma pasta do script
+# Define os caminhos padrão na mesma pasta do script
 COOKIES_FILE = BASE_DIR / "cookies.txt"
+CANAIS_FILE = BASE_DIR / "canais.json"
+ARCHIVE_FILE = BASE_DIR / "historico_downloads.txt"
 
 
 # =====================================================================
-# 2. FUNÇÃO PRINCIPAL DE DOWNLOAD
+# 2. CONFIGURAÇÃO BASE E FILTROS DO YT-DLP
+# =====================================================================
+
+def _opcoes_base_ydl(output_template: str) -> dict:
+    """Retorna as opções comuns do yt-dlp, incluindo autenticação via cookies."""
+    ydl_opts = {
+        "format": "bestvideo+bestaudio/best",
+        "merge_output_format": "mp4",
+        "outtmpl": output_template,
+        "quiet": False,
+        "no_warnings": False,
+        "js_runtimes": {"deno": {"path": None}, "node": {"path": None}},
+        "remote_components": ["ejs:github"],
+        "extractor_args": {"youtubetab": {"skip": ["authcheck"]}},
+    }
+
+    if COOKIES_FILE.exists():
+        ydl_opts["cookiefile"] = str(COOKIES_FILE)
+        print(f"-> Usando cookies de autenticação em: {COOKIES_FILE.name}")
+    else:
+        print(f"-> Aviso: '{COOKIES_FILE.name}' não encontrado em {BASE_DIR}.")
+        print("-> Tentando baixar sem cookies...")
+
+    return ydl_opts
+
+
+def criar_filtro_video(
+    duracao_min: Optional[int] = None,
+    duracao_max: Optional[int] = None,
+):
+    """Cria uma função match_filter para o yt-dlp ignorar lives e filtrar por duração."""
+    def _filtro(info: dict, *, incomplete: bool) -> Optional[str]:
+        if incomplete:
+            return None
+
+        if info.get("is_live") or info.get("live_status") == "is_live":
+            return "Ignorado: transmissão ao vivo em andamento."
+
+        duracao = info.get("duration")
+        if duracao is not None:
+            if duracao_min is not None and duracao < duracao_min:
+                return f"Ignorado: duração ({duracao}s) menor que o mínimo ({duracao_min}s)."
+            if duracao_max is not None and duracao > duracao_max:
+                return f"Ignorado: duração ({duracao}s) maior que o máximo ({duracao_max}s)."
+
+        return None
+
+    return _filtro
+
+
+# =====================================================================
+# 3. FUNÇÃO DE DOWNLOAD MANUAL (VÍDEO ÚNICO)
 # =====================================================================
 
 def download_youtube_video(youtube_url: str, job_id: str) -> Path:
@@ -36,49 +92,15 @@ def download_youtube_video(youtube_url: str, job_id: str) -> Path:
     Retorna:
         Path: O caminho completo do arquivo de vídeo salvo no computador.
     """
-    # Define o modelo de nome do arquivo. Exemplo: "a1b2c3d4_raw.mp4"
-    # O termo %(ext)s é preenchido automaticamente pelo yt-dlp com a extensão correta.
     output_template = str(TEMP_DIR / f"{job_id}_raw.%(ext)s")
+    ydl_opts = _opcoes_base_ydl(output_template)
+    ydl_opts["noplaylist"] = True
 
-    # Dicionário de configurações que controla como o yt-dlp vai trabalhar
-    ydl_opts = {
-        # Parâmetro ajustável: escolhe a melhor qualidade de vídeo + áudio disponível
-        "format": "bestvideo+bestaudio/best",
-        
-        # Parâmetro ajustável: une o áudio e o vídeo gerando um arquivo final .mp4
-        "merge_output_format": "mp4",
-        
-        # Define onde o arquivo será salvo e com qual nome
-        "outtmpl": output_template,
-        
-        # Parâmetros de visualização no terminal (False = mostra tudo na tela)
-        "quiet": False,
-        "no_warnings": False,
-        
-        # Evita baixar uma playlist inteira se o link tiver uma lista anexada
-        "noplaylist": True,
-    }
-
-    # Verifica se o arquivo cookies.txt existe antes de enviá-lo ao yt-dlp
-    if COOKIES_FILE.exists():
-        ydl_opts["cookiefile"] = str(COOKIES_FILE)
-        print(f"-> Usando cookies de autenticação em: {COOKIES_FILE.name}")
-    else:
-        print(f"-> Aviso: '{COOKIES_FILE.name}' não encontrado em {BASE_DIR}.")
-        print("-> Tentando baixar sem cookies...")
-
-    # Inicia o yt-dlp com as configurações acima e faz o download do vídeo
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.extract_info(youtube_url, download=True)
 
-    # =================================================================
-    # 3. VERIFICAÇÃO DO ARQUIVO BAIXADO
-    # =================================================================
-    
-    # Procura pelo arquivo .mp4 esperado
     final_path = TEMP_DIR / f"{job_id}_raw.mp4"
-    
-    # Caso tenha sido salvo com outra extensão, localiza o arquivo pelo job_id
+
     if not final_path.exists():
         arquivos_encontrados = list(TEMP_DIR.glob(f"{job_id}_raw.*"))
         if arquivos_encontrados:
@@ -92,28 +114,118 @@ def download_youtube_video(youtube_url: str, job_id: str) -> Path:
 
 
 # =====================================================================
-# 4. PONTO DE PARTIDA DO PROGRAMA (EXECUÇÃO NO TERMINAL)
+# 4. MONITORAMENTO AUTOMÁTICO DE CANAIS (VIA CANAIS.JSON)
 # =====================================================================
 
-if __name__ == "__main__":
+def monitorar_canais(config_path: Path = CANAIS_FILE, dry_run: bool = False) -> None:
+    """Lê a lista de canais do JSON e baixa apenas os vídeos novos dentro dos filtros."""
+    if not config_path.exists():
+        print(f"❌ Arquivo de configuração não encontrado: {config_path}")
+        return
+
+    with config_path.open("r", encoding="utf-8") as f:
+        canais = json.load(f)
+
+    if not isinstance(canais, list):
+        print(f"❌ O arquivo '{config_path.name}' deve conter uma lista JSON de canais.")
+        return
+
+    canais_ativos = [c for c in canais if c.get("ativo", True)]
+    if not canais_ativos:
+        print(f"⚠️ Nenhum canal ativo encontrado em '{config_path.name}'.")
+        print("-> Edite o arquivo e defina \"ativo\": true nos canais que deseja monitorar.")
+        return
+
+    print(f"🔎 Iniciando verificação de {len(canais_ativos)} canal(is)...")
+    if dry_run:
+        print("🧪 Modo simulação (--dry-run): nenhum vídeo será baixado.\n")
+
+    for canal in canais_ativos:
+        nome = canal.get("nome") or canal.get("url", "Canal sem nome")
+        url = (canal.get("url") or "").strip()
+        if not url:
+            print(f"⚠️ Canal '{nome}' sem URL configurada. Pulando...")
+            continue
+
+        max_recentes = int(canal.get("max_recentes", 3))
+        duracao_min = canal.get("duracao_min_segundos")
+        duracao_max = canal.get("duracao_max_segundos")
+
+        print(f"\n=== Verificando: {nome} (últimos {max_recentes} vídeos) ===")
+
+        output_template = str(
+            TEMP_DIR / "%(upload_date)s_%(id)s_%(title).60B.%(ext)s"
+        )
+        ydl_opts = _opcoes_base_ydl(output_template)
+        ydl_opts.update({
+            "noplaylist": False,
+            "playlistend": max_recentes,
+            "ignoreerrors": True,
+            "restrictfilenames": True,
+            "download_archive": str(ARCHIVE_FILE),
+            "match_filter": criar_filtro_video(duracao_min, duracao_max),
+        })
+
+        if dry_run:
+            ydl_opts["simulate"] = True
+
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+        except Exception as e:
+            print(f"❌ Erro ao verificar o canal '{nome}': {e}")
+
+    print("\n🏁 Verificação de canais concluída!")
+
+
+# =====================================================================
+# 5. PONTO DE PARTIDA DO PROGRAMA
+# =====================================================================
+
+def executar_modo_manual() -> None:
     print("--- BAIXADOR DE VÍDEOS DO YOUTUBE ---")
-    
-    # Solicita o link ao usuário e remove espaços em branco extras (.strip())
     url_input = input("Digite o link do vídeo do YouTube: ").strip()
 
-    # Validação simples para garantir que o usuário digitou algo
     if not url_input:
         print("Erro: Nenhum link foi fornecido.")
-    else:
-        # Cria um código único de 8 letras/números (ex: '4f8a9d12')
-        unique_job_id = str(uuid.uuid4())[:8]
-        print(f"\nIniciando download (ID: {unique_job_id})...")
-        print(f"Pasta de destino: {TEMP_DIR}\n")
+        return
 
-        # O bloco try/except captura erros para o programa não fechar de forma brusca
-        try:
-            video_path = download_youtube_video(url_input, unique_job_id)
-            print("\n✅ Download concluído com sucesso!")
-            print(f"📁 Arquivo salvo em: {video_path}")
-        except Exception as e:
-            print(f"\n❌ Ocorreu um erro no download: {e}")
+    unique_job_id = str(uuid.uuid4())[:8]
+    print(f"\nIniciando download (ID: {unique_job_id})...")
+    print(f"Pasta de destino: {TEMP_DIR}\n")
+
+    try:
+        video_path = download_youtube_video(url_input, unique_job_id)
+        print("\n✅ Download concluído com sucesso!")
+        print(f"📁 Arquivo salvo em: {video_path}")
+    except Exception as e:
+        print(f"\n❌ Ocorreu um erro no download: {e}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Baixador de vídeos do YouTube (modo manual ou monitor de canais)."
+    )
+    parser.add_argument(
+        "--monitor",
+        action="store_true",
+        help="Verifica automaticamente os canais listados em canais.json.",
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=CANAIS_FILE,
+        help="Caminho para o arquivo JSON de canais (padrão: canais.json).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Simula a verificação sem baixar os vídeos nem gravar no histórico.",
+    )
+
+    args = parser.parse_args()
+
+    if args.monitor:
+        monitorar_canais(config_path=args.config, dry_run=args.dry_run)
+    else:
+        executar_modo_manual()
