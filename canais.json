@@ -3,7 +3,7 @@
     "nome": "TV BRASIL",
     "url": "https://www.youtube.com/@tvbrasil/videos",
     "ativo": true,
-    "max_recentes": 2,
+    "max_recentes": 3,
     "duracao_min_segundos": 180,
     "duracao_max_segundos": null
   },
@@ -19,7 +19,7 @@
     "nome": "CANAL DO LULA",
     "url": "https://www.youtube.com/@LulaOficial/videos?view=2&sort=dd&live_view=503&shelf_id=5",
     "ativo": true,
-    "max_recentes": 2,
+    "max_recentes": 5,
     "duracao_min_segundos": 180,
     "duracao_max_segundos": null
   },

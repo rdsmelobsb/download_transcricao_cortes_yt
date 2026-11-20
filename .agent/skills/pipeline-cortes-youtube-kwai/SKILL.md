@@ -1,6 +1,6 @@
 ---
 name: pipeline-cortes-youtube-kwai
-description: Orquestra o pipeline completo de produção e postagem de cortes (YouTube Shorts e Kwai) cobrindo monitoramento (download.py), transcrição (gerador_srt.py), curadoria IA (analisar_srt.py), renderização (cortes.py) e publicação/agendamento no YouTube (publicar_youtube.py). Use sempre que o usuário pedir para monitorar canais, transcrever, analisar, renderizar ou publicar cortes.
+description: Orquestra o pipeline completo de produção e postagem de cortes (YouTube Shorts e Kwai) cobrindo monitoramento (download.py), transcrição (gerador_srt.py), curadoria IA (analisar_srt.py), renderização (cortes.py), publicação no YouTube (publicar_youtube.py) e publicação no Kwai via Android ADB (publicar_kwai.py). Use sempre que o usuário pedir para monitorar canais, transcrever, analisar, renderizar ou publicar cortes.
 ---
 
 # Pipeline Automatizado de Cortes (YouTube Shorts & Kwai)
@@ -10,8 +10,9 @@ Esta skill define a arquitetura, os contratos de dados e as regras operacionais 
 ## 1. Estrutura de Diretórios e Arquivos
 
 * `temp/`: Diretório central de entrada e trabalho. Armazena vídeos baixados (`<YYYYMMDD>_<video_id>_<titulo>.mp4` ou `<job_id>_raw.mp4`) e suas transcrições correspondentes (`.srt`).
-* `temp/tarefas_corte.json`: **Manifesto acumulativo e fonte única de verdade** dos cortes. Gerado pelo `analisar_srt.py`, atualizado pelo `cortes.py` e finalizado pelo `publicar_youtube.py`. Cada item tem `id` estável (`<video_id>_<n>`), `ordem`, `horario_sugerido`, `nome`, `video_path`, `title`, `start`, `end`, `titulo_capa`, `texto_publicacao`, `hashtags`, `status` (`pendente` → `renderizado` → `publicado`), `criado_em`, `arquivo_final`, `modo`, `youtube_video_id` e `youtube_url`.
+* `temp/tarefas_corte.json`: **Manifesto acumulativo e fonte única de verdade** dos cortes. Gerado pelo `analisar_srt.py`, atualizado pelo `cortes.py` e finalizado pelo `publicar_youtube.py` / `publicar_kwai.py`. Cada item tem `id` estável (`<video_id>_<n>`), `ordem`, `horario_sugerido`, `nome`, `video_path`, `title`, `start`, `end`, `titulo_capa`, `texto_publicacao`, `hashtags`, `status` (`pendente` → `renderizado` → `publicado`), `criado_em`, `arquivo_final`, `modo`, `youtube_video_id`, `youtube_url`, `publicado_kwai` e `kwai_publicado_em`.
 * `publicar_youtube.py`: Script de upload e agendamento nativo no YouTube via YouTube Data API v3 oficial (OAuth2).
+* `publicar_kwai.py`: Script de publicação no app Android do Kwai (`com.kwai.video`) via ADB + `uiautomator2` com ranking inteligente (**Score Kwai**) e envio determinístico via `ACTION_SEND`.
 * `client_secrets.json` e `token.json`: Credenciais OAuth da Google API (protegidas no `.gitignore`).
 * `prompts/politica_direta.md`: Prompt editorial lido pelo `analisar_srt.py` (placeholders `{{VIDEO_FILENAME}}`, `{{MAX_CORTES}}`, `{{TRANSCRICAO_SRT}}`). Ajustes de curadoria devem ser feitos neste arquivo, nunca no código.
 * `cortes_prontos/`: Diretório de saída dos cortes renderizados (`corte_<id>_<sufixo_formato>_<nome_limpo>.mp4`).
@@ -99,13 +100,27 @@ Selecionar o modo adequado ao vídeo:
 * **Cota da API do YouTube:** Cada upload consome 1.600 unidades da cota diária (10.000 unidades). Limite máximo gratuito: **6 vídeos por dia**.
 * **Regra de Agendamento:** Horários sugeridos (`11:30`, `17:30`, `20:30` - Brasília UTC-3) são convertidos para UTC (+3h) para o campo `publishAt`. Se o horário de hoje já passou, o agendamento vai automaticamente para o dia seguinte.
 
+### Etapa 6: Publicação Automatizada no Kwai via Android (`publicar_kwai.py`)
+
+* **Por que Android ADB e não Web:** O Kwai não oferece portal web aberto de upload (`kwai.com/creator` retorna 404). O script usa `uiautomator2` + `adbutils` (que já inclui `adb.exe` embutido no `venv`).
+* **Seleção Inteligente (Score Kwai):** Pontua cortes pendentes (`publicado_kwai != true`) priorizando duração entre 45s e 75s, gatilhos de capa e diversidade temática (evita múltiplos cortes do mesmo vídeo de origem no mesmo lote).
+* **Fluxo Determinístico (`ACTION_SEND` + MediaStore):**
+  1. Envia o `.mp4` via `adb push` para `/sdcard/Movies/PoliticaDireta/` e consulta o MediaStore (`content://media/external/video/media/<_id>`). **Nunca selecionar vídeos pela galeria do Kwai**, pois o app salva cópias exportadas com timestamp mais recente causando duplicatas.
+  2. Dispara `am start -a android.intent.action.SEND -t video/mp4 --eu android.intent.extra.STREAM <content_uri> -n com.kwai.video/com.kscorp.oversea.platform.router.ui.UriRouterActivity -f 0x1`.
+  3. **Resource-IDs nativos calibrados (`com.kwai.video`):** `v_cut_next` (Próximo no corte) → `music_close_view` (remove música automática) → `edit_next_button` (Próximo na edição) → `editor` (cola legenda via `set_clipboard` + `input keyevent 279` / `KEYCODE_PASTE` para manter acentos PT-BR, depois `back`) → `post` (Publicar).
+  4. Atualiza `publicado_kwai: true` e `kwai_publicado_em` no manifesto e remove o `.mp4` temporário da pasta `/sdcard/Movies/PoliticaDireta/`.
+* **Comandos:**
+  * `python publicar_kwai.py --top 1 --preparar` (envia e cola legenda, pausando antes de publicar)
+  * `python publicar_kwai.py --top 3` (publicação automática em lote com intervalo anti-bot)
+  * `python publicar_kwai.py --inspecionar` (lista textos e resource-ids da tela atual do celular)
+
 ## 3. Regras de Segurança e Governança
 
 * Nunca apagar arquivos da pasta `temp/` nem limpar `historico_downloads.txt` ou `historico_srt_analisados.txt` sem solicitação explícita.
 * **Scripts em execução:** se o usuário avisar que está executando um script, limitar-se a leitura e diagnóstico; não editar arquivos nem rodar comandos que interfiram até ele liberar.
 * **Fontes de conteúdo:** ao adicionar ou ativar canais em `canais.json`, lembrar o usuário de confirmar que tem licença/autorização para reutilizar o conteúdo (direitos autorais e política de conteúdo reutilizado do YouTube).
 * **Git:** o agente pode preparar `git add`/`git commit`, mas **nunca deve executar `git push`** (o Git Credential Manager aguarda login interativo e trava em background); entregar o comando `git push origin main` para o usuário rodar no próprio terminal. Ao criar `requirements.txt`, acrescentar `!requirements.txt` ao `.gitignore` (a regra `*.txt` o ignoraria).
-* **Execução fora do sandbox:** comandos que gravam em `.git` (`git add`, `git commit`) e qualquer comando com acesso à rede (`yt-dlp`, chamadas à Gemini API) precisam de `BypassSandbox`.
+* **Execução fora do sandbox:** comandos que gravam em `.git` (`git add`, `git commit`), acesso à rede (`yt-dlp`, Gemini API, YouTube API) e comunicação ADB (`127.0.0.1:5037` / USB) precisam de `BypassSandbox`.
 * **Segurança de Credenciais:** `client_secrets.json` e `token.json` nunca devem ser versionados no Git (sempre protegidos no `.gitignore`).
 * **Idioma e Plataformas:** Escrever todos os títulos e textos estritamente em Português do Brasil (PT-BR) e direcionar entregas exclusivamente para **YouTube Shorts** e **Kwai** (nunca mencionar ou formatar para TikTok).
 * Sempre validar se o `video_path` de cada item do manifesto `temp/tarefas_corte.json` corresponde a um arquivo existente em `temp/` antes de executar `cortes.py`. Nunca editar `cortes.py` para registrar cortes.

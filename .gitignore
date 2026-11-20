@@ -12,6 +12,7 @@ cookies.txt
 *.txt
 client_secrets.json
 token.json
+.kwai_profile/
 
 # Pastas de saída, mídias e temporárias
 temp/
