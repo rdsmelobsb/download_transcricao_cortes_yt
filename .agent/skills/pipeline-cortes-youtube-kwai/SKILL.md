@@ -1,6 +1,6 @@
 ---
 name: pipeline-cortes-youtube-kwai
-description: Orquestra o pipeline local de monitoramento, download, transcrição Whisper, análise de cortes via Gemini API e renderização automatizada de vídeos (YouTube Shorts e Kwai) usando download.py, gerador_srt.py, analisar_srt.py e cortes.py. Use sempre que o usuário pedir para monitorar canais, baixar vídeos, transcrever arquivos em temp/, analisar arquivos .srt para gerar cortes, atualizar o manifesto de cortes (tarefas_corte.json) ou renderizar vídeos finais.
+description: Orquestra o pipeline completo de produção e postagem de cortes (YouTube Shorts e Kwai) cobrindo monitoramento (download.py), transcrição (gerador_srt.py), curadoria IA (analisar_srt.py), renderização (cortes.py) e publicação/agendamento no YouTube (publicar_youtube.py). Use sempre que o usuário pedir para monitorar canais, transcrever, analisar, renderizar ou publicar cortes.
 ---
 
 # Pipeline Automatizado de Cortes (YouTube Shorts & Kwai)
@@ -10,7 +10,9 @@ Esta skill define a arquitetura, os contratos de dados e as regras operacionais 
 ## 1. Estrutura de Diretórios e Arquivos
 
 * `temp/`: Diretório central de entrada e trabalho. Armazena vídeos baixados (`<YYYYMMDD>_<video_id>_<titulo>.mp4` ou `<job_id>_raw.mp4`) e suas transcrições correspondentes (`.srt`).
-* `temp/tarefas_corte.json`: **Manifesto acumulativo e fonte única de verdade** dos cortes. Gerado pelo `analisar_srt.py` e lido/atualizado pelo `cortes.py` (lógica compartilhada em `manifesto.py`). Cada item tem `id` estável (`<video_id>_<n>`, ex.: `JHIJDjlMYNQ_1`), `ordem`, `horario_sugerido`, `nome`, `video_path`, `title`, `start`, `end`, `titulo_capa`, `texto_publicacao`, `hashtags`, `status` (`pendente` → `renderizado` → `publicado`), `criado_em`, `arquivo_final` e `modo`.
+* `temp/tarefas_corte.json`: **Manifesto acumulativo e fonte única de verdade** dos cortes. Gerado pelo `analisar_srt.py`, atualizado pelo `cortes.py` e finalizado pelo `publicar_youtube.py`. Cada item tem `id` estável (`<video_id>_<n>`), `ordem`, `horario_sugerido`, `nome`, `video_path`, `title`, `start`, `end`, `titulo_capa`, `texto_publicacao`, `hashtags`, `status` (`pendente` → `renderizado` → `publicado`), `criado_em`, `arquivo_final`, `modo`, `youtube_video_id` e `youtube_url`.
+* `publicar_youtube.py`: Script de upload e agendamento nativo no YouTube via YouTube Data API v3 oficial (OAuth2).
+* `client_secrets.json` e `token.json`: Credenciais OAuth da Google API (protegidas no `.gitignore`).
 * `prompts/politica_direta.md`: Prompt editorial lido pelo `analisar_srt.py` (placeholders `{{VIDEO_FILENAME}}`, `{{MAX_CORTES}}`, `{{TRANSCRICAO_SRT}}`). Ajustes de curadoria devem ser feitos neste arquivo, nunca no código.
 * `cortes_prontos/`: Diretório de saída dos cortes renderizados (`corte_<id>_<sufixo_formato>_<nome_limpo>.mp4`).
 * `cortes_prontos/kit_publicacao.md`: Documento Markdown regenerado pelo `analisar_srt.py` com o Kit de Publicação de todos os cortes ainda não `publicado` (título de capa, texto em 4 partes e 5 hashtags iniciadas por `#PolíticaDireta`).
@@ -87,6 +89,16 @@ Selecionar o modo adequado ao vídeo:
 * **Modo `4` (`vertical_com_blur`):** Combina Modo `1` + filtros `delogo` do Modo `3`. Ideal para vídeos reaproveitados com marcas d'água centrais/inferiores.
 * **Modo `5` (`vertical_tela_cheia`):** Crop 9:16 puro em tela cheia (1080x1920) sem barras pretas. Ideal para falas solo centralizadas.
 
+### Etapa 5: Publicação e Agendamento Automático no YouTube (`publicar_youtube.py`)
+
+* **Autenticação:** Lê `client_secrets.json` na primeira execução e salva a sessão em `token.json`.
+* **Interativo:** `python publicar_youtube.py` (lista os vídeos `renderizado`, permitindo escolher quais postar ou apertar ENTER para postar todos).
+* **Automático em lote (agendado):** `python publicar_youtube.py --todos` (faz upload de todos os cortes renderizados e agenda nos horários correspondentes da grade diária: `11:30`, `17:30`, `20:30`).
+* **Opções adicionais:** `--privado` (sobe sem data de agendamento), `--imediato` (torna público na hora) e `--amanha` (força a grade para o dia seguinte).
+* **Atualização de Estado:** Após o upload com sucesso, atualiza o corte no manifesto para `status: "publicado"`, preenche `youtube_video_id` e link `youtube_url`.
+* **Cota da API do YouTube:** Cada upload consome 1.600 unidades da cota diária (10.000 unidades). Limite máximo gratuito: **6 vídeos por dia**.
+* **Regra de Agendamento:** Horários sugeridos (`11:30`, `17:30`, `20:30` - Brasília UTC-3) são convertidos para UTC (+3h) para o campo `publishAt`. Se o horário de hoje já passou, o agendamento vai automaticamente para o dia seguinte.
+
 ## 3. Regras de Segurança e Governança
 
 * Nunca apagar arquivos da pasta `temp/` nem limpar `historico_downloads.txt` ou `historico_srt_analisados.txt` sem solicitação explícita.
@@ -94,6 +106,7 @@ Selecionar o modo adequado ao vídeo:
 * **Fontes de conteúdo:** ao adicionar ou ativar canais em `canais.json`, lembrar o usuário de confirmar que tem licença/autorização para reutilizar o conteúdo (direitos autorais e política de conteúdo reutilizado do YouTube).
 * **Git:** o agente pode preparar `git add`/`git commit`, mas **nunca deve executar `git push`** (o Git Credential Manager aguarda login interativo e trava em background); entregar o comando `git push origin main` para o usuário rodar no próprio terminal. Ao criar `requirements.txt`, acrescentar `!requirements.txt` ao `.gitignore` (a regra `*.txt` o ignoraria).
 * **Execução fora do sandbox:** comandos que gravam em `.git` (`git add`, `git commit`) e qualquer comando com acesso à rede (`yt-dlp`, chamadas à Gemini API) precisam de `BypassSandbox`.
+* **Segurança de Credenciais:** `client_secrets.json` e `token.json` nunca devem ser versionados no Git (sempre protegidos no `.gitignore`).
 * **Idioma e Plataformas:** Escrever todos os títulos e textos estritamente em Português do Brasil (PT-BR) e direcionar entregas exclusivamente para **YouTube Shorts** e **Kwai** (nunca mencionar ou formatar para TikTok).
 * Sempre validar se o `video_path` de cada item do manifesto `temp/tarefas_corte.json` corresponde a um arquivo existente em `temp/` antes de executar `cortes.py`. Nunca editar `cortes.py` para registrar cortes.
 * Ao finalizar um lote de cortes, apresentar um resumo claro listando: vídeo de origem, modo FFmpeg aplicado, horários sugeridos e caminhos dos arquivos gerados em `cortes_prontos/`.

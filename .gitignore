@@ -10,6 +10,8 @@ __pycache__/
 cookies
 cookies.txt
 *.txt
+client_secrets.json
+token.json
 
 # Pastas de saída, mídias e temporárias
 temp/
