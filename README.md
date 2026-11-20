@@ -19,8 +19,9 @@ Pipeline completo em Python para automatizar a produção de cortes de vídeos p
 3. **Curadoria de Cortes e Kit de Publicação via Gemini API (`analisar_srt.py`):**
    * Lê as transcrições `.srt` em `temp/`, pré-anota cada timestamp com o valor exato em segundos decimais (`float`) para evitar erros de cálculo e envia ao modelo `gemini-2.5-flash`.
    * Seleciona os **3 melhores cortes** por vídeo (45s a 100s, com gancho forte nos primeiros 3 segundos) distribuídos nos horários estratégicos da grade diária (`11:30`, `17:30` e `20:30`).
-   * Atualiza automaticamente a lista `TAREFAS_DE_CORTE` dentro do `cortes.py`.
-   * Gera o manifesto `temp/tarefas_corte.json` e o **Kit de Publicação** completo em `cortes_prontos/kit_publicacao.md` (com Título de Capa, Texto de Publicação em 4 partes e 5 Hashtags).
+   * Lê o prompt editorial de `prompts/politica_direta.md` (edite esse arquivo para ajustar a curadoria, sem mexer no código).
+   * Registra os cortes no **manifesto acumulativo** `temp/tarefas_corte.json`, com **ids estáveis** por vídeo (ex.: `JHIJDjlMYNQ_1`) e `status` (`pendente` → `renderizado` → `publicado`). Reanalisar um vídeo substitui só os cortes dele.
+   * Gera o **Kit de Publicação** completo em `cortes_prontos/kit_publicacao.md` (com Título de Capa, Texto de Publicação em 4 partes e 5 Hashtags).
 
 4. **Recorte e Enquadramento Vertical (`cortes.py`):**
    * Localiza automaticamente os vídeos de origem dentro da pasta `temp/` (pelo nome completo ou ID do vídeo).
@@ -95,16 +96,8 @@ Edite o arquivo `canais.json` na raiz do projeto com os canais que deseja monito
 ```json
 [
   {
-    "nome": "UOL",
-    "url": "https://www.youtube.com/@uol/videos",
-    "ativo": true,
-    "max_recentes": 3,
-    "duracao_min_segundos": 180,
-    "duracao_max_segundos": null
-  },
-  {
-    "nome": "MIDIA NINJA",
-    "url": "https://www.youtube.com/channel/UCwefw3viiiaxprsV6jgJvEA/videos",
+    "nome": "Canal Exemplo",
+    "url": "https://www.youtube.com/@CanalExemplo/videos",
     "ativo": true,
     "max_recentes": 3,
     "duracao_min_segundos": 180,
@@ -112,6 +105,8 @@ Edite o arquivo `canais.json` na raiz do projeto com os canais que deseja monito
   }
 ]
 ```
+
+> **Direitos autorais:** monitore apenas canais cujo conteúdo você tem licença/autorização para reutilizar (ex.: material de domínio público ou liberado pelo autor). Reupar conteúdo de terceiros pode violar direitos autorais e as políticas de conteúdo reutilizado do YouTube.
 
 > **Dica:** Caso algum handle `@canal/videos` retorne erro `404` no YouTube, utilize a URL canônica com o ID do canal (`https://www.youtube.com/channel/<CHANNEL_ID>/videos`).
 
@@ -153,7 +148,7 @@ Transcreve automaticamente todos os vídeos da pasta `temp/` que ainda não poss
 
 ### Etapa 3: Análise do `.srt` e Curadoria de Cortes com IA (`analisar_srt.py`)
 
-Analisa as transcrições `.srt` em `temp/` via Gemini API, atualiza automaticamente `TAREFAS_DE_CORTE` dentro de `cortes.py` e gera o Kit de Publicação em `cortes_prontos/kit_publicacao.md`:
+Analisa as transcrições `.srt` em `temp/` via Gemini API, registra os cortes no manifesto `temp/tarefas_corte.json` e gera o Kit de Publicação em `cortes_prontos/kit_publicacao.md`:
 
 * **Modo interativo** (lista os `.srt` de `temp/`, indicando quais são `[NOVO]` ou `[JÁ ANALISADO]`):
   ```powershell
@@ -169,9 +164,9 @@ Analisa as transcrições `.srt` em `temp/` via Gemini API, atualiza automaticam
   ```
 
 **Saídas geradas automaticamente por esta etapa:**
-1. Atualização da variável `TAREFAS_DE_CORTE` em `cortes.py`.
-2. Manifesto estruturado em `temp/tarefas_corte.json`.
-3. Documento `cortes_prontos/kit_publicacao.md` contendo para cada corte:
+1. Manifesto acumulativo em `temp/tarefas_corte.json` (fonte única de verdade lida pelo `cortes.py`).
+2. Kit de Publicação em `cortes_prontos/kit_publicacao.md` com todos os cortes ainda não publicados.
+3. Para cada corte:
    * Horário estratégico sugerido (`11:30`, `17:30`, `20:30`)
    * Título otimizado (SEO/retenção)
    * Título de capa / tela com selo de impacto
@@ -182,13 +177,16 @@ Analisa as transcrições `.srt` em `temp/` via Gemini API, atualiza automaticam
 
 ### Etapa 4: Renderização dos Cortes (`cortes.py`)
 
-Com o `TAREFAS_DE_CORTE` atualizado, execute:
+O `cortes.py` lê o manifesto `temp/tarefas_corte.json` e renderiza **apenas os cortes `pendente`**, marcando cada um como `renderizado` ao concluir:
 
 ```powershell
-python cortes.py
+python cortes.py                 # pergunta o modo (1 a 5)
+python cortes.py --modo 5        # sem perguntas (ideal para agendar)
+python cortes.py --modo 5 --id JHIJDjlMYNQ_1   # apenas um corte
+python cortes.py --modo 5 --todos              # re-renderiza todos os não publicados
 ```
 
-Escolha um dos **5 modos de corte** no menu interativo:
+Modos de corte:
 * `[1]` **Vertical intermediário (9:16 - 1080x1920 com respiro/faixas):** Ideal para entrevistas e planos abertos onde cortar as laterais perderia contexto.
 * `[2]` **Formato original:** Mantém a proporção original do vídeo, recortando apenas início e fim.
 * `[3]` **Remover/Borrar marca d'água (`delogo`):** Aplica filtro de desfoque em marcas d'água centrais/rodapé.
@@ -216,11 +214,14 @@ Para executar o monitoramento de canais automaticamente em horários fixos ou a 
 
 ```text
 ├── .agent/skills/                  # Skills e diretrizes operacionais do agente IA
+├── prompts/
+│   └── politica_direta.md          # Prompt editorial lido pelo analisar_srt.py
 ├── cortes_prontos/                 # Vídeos finais renderizados e kit_publicacao.md (ignorado no Git)
 ├── temp/                           # Vídeos brutos (.mp4), legendas (.srt) e tarefas_corte.json (ignorado no Git)
 ├── analisar_srt.py                 # Curadoria de cortes e kit de publicação via Gemini API
+├── manifesto.py                    # Leitura/escrita do manifesto, ids estáveis e status dos cortes
 ├── canais.json                     # Configuração de canais monitorados e filtros de duração
-├── cortes.py                       # Recorte e enquadramento de vídeo via FFmpeg
+├── cortes.py                       # Renderiza os cortes pendentes do manifesto via FFmpeg
 ├── download.py                     # Download manual e monitoramento automático via yt-dlp
 ├── gerador_srt.py                  # Transcrição automática de áudio para SRT via Whisper
 ├── .env                            # Chave GEMINI_API_KEY (ignorado no Git)

@@ -17,11 +17,12 @@ with warnings.catch_warnings():
 # 1. CONFIGURAÇÃO DE DIRETÓRIOS E CONSTANTES
 # =====================================================================
 
+import manifesto
+
 BASE_DIR = Path(__file__).resolve().parent
 TEMP_DIR = BASE_DIR / "temp"
 OUTPUT_DIR = BASE_DIR / "cortes_prontos"
-CORTES_PY_FILE = BASE_DIR / "cortes.py"
-TAREFAS_JSON_FILE = TEMP_DIR / "tarefas_corte.json"
+PROMPT_FILE = BASE_DIR / "prompts" / "politica_direta.md"
 KIT_PUBLICACAO_MD_FILE = OUTPUT_DIR / "kit_publicacao.md"
 HISTORICO_SRT_FILE = BASE_DIR / "historico_srt_analisados.txt"
 ENV_FILE = BASE_DIR / ".env"
@@ -130,6 +131,24 @@ def configurar_api_gemini() -> None:
     genai.configure(api_key=api_key)
 
 
+def carregar_prompt(video_filename: str, max_cortes: int, srt_anotado: str) -> str:
+    """Lê prompts/politica_direta.md e preenche os placeholders {{...}}."""
+    if not PROMPT_FILE.exists():
+        raise FileNotFoundError(
+            f"Prompt editorial não encontrado: {PROMPT_FILE}\n"
+            "-> Restaure o arquivo prompts/politica_direta.md."
+        )
+    texto = PROMPT_FILE.read_text(encoding="utf-8")
+    substituicoes = {
+        "{{VIDEO_FILENAME}}": video_filename,
+        "{{MAX_CORTES}}": str(max_cortes),
+        "{{TRANSCRICAO_SRT}}": srt_anotado,
+    }
+    for chave, valor in substituicoes.items():
+        texto = texto.replace(chave, valor)
+    return texto.strip()
+
+
 def analisar_srt_com_gemini(
     srt_path: Path,
     max_cortes: int = 3,
@@ -143,43 +162,7 @@ def analisar_srt_com_gemini(
     srt_anotado = preparar_srt_com_segundos(conteudo_srt)
     video_filename = srt_path.with_suffix(".mp4").name
 
-    prompt = f"""
-Você é o estrategista e editor-chefe do canal **Política Direta** (focado exclusivamente em **YouTube Shorts** e **Kwai**).
-Analise a transcrição SRT completa abaixo (originada do vídeo '{video_filename}') e extraia exatamente {max_cortes} cortes virais de alta retenção, juntamente com o Kit de Publicação completo de cada corte.
-
-### 1. CURADORIA EDITORIAL E LIMPEZA DA TRANSCRIÇÃO
-- Priorize temas de alto engajamento e compartilhamento: impacto direto no bolso do trabalhador, direitos trabalhistas e sociais, soberania nacional, economia real, defesa da democracia, geopolítica e combate à desinformação.
-- Selecione exatamente **{max_cortes} cortes principais**, com duração alvo entre **45 e 100 segundos** (ajustando se o vídeo original for mais curto ou se um argumento central exigir alguns segundos extras para não cortar no meio da frase).
-- Escolha trechos que comecem com um gancho forte nos primeiros 3 segundos e terminem com fechamento conclusivo.
-- Corrija erros típicos de transcrição automática (nomes próprios, siglas, cifras e palavras distorcidas pelo STT) nos títulos e textos de publicação, sem alterar o sentido original da fala nem os timestamps reais do `.srt`.
-- Evite repetir o mesmo intervalo de áudio em dois cortes distintos, a menos que o vídeo original tenha menos de 2 minutos no total.
-
-### 2. DISTRIBUIÇÃO NA GRADE DIÁRIA
-Atribua cada um dos cortes à grade fixa do canal, combinando o perfil do corte com o comportamento da audiência no YouTube Shorts e no Kwai:
-1. **Ordem 1 (`"11:30"`):** Pauta de utilidade pública, economia, medidas práticas ou impacto direto no cotidiano (pico do almoço).
-2. **Ordem 2 (`"17:30"`):** Debate quente, análise política, cobrança ou contraponto estratégico (fim de expediente).
-3. **Ordem 3 (`"20:30"`):** Corte de maior carga emocional, posicionamento firme, valorização institucional ou alto potencial de compartilhamento orgânico (horário nobre).
-
-### 3. REGRAS DE PRECISÃO E RESTRIÇÕES
-- **Português do Brasil (PT-BR):** Escreva todos os títulos, legendas e descrições estritamente em português brasileiro natural (evite termos de PT-PT).
-- **Plataformas ativas:** O projeto opera apenas no **YouTube Shorts** e no **Kwai**. Nunca mencione, recomende ou formate entregas para o TikTok.
-- **Precisão dos timestamps:** Use EXATAMENTE os números em segundos decimais (`float`) que aparecem entre colchetes `[inicio_s --> fim_s]` na transcrição para preencher `start` e `end`.
-
-### 4. ESTRUTURA DE CADA OBJETO NO ARRAY JSON DE SAÍDA
-Retorne APENAS um array JSON válido onde cada objeto contenha exatamente as chaves abaixo:
-- `"ordem"`: Inteiro (1, 2 ou 3) correspondente à posição na grade diária.
-- `"horario_sugerido"`: String (`"11:30"`, `"17:30"` ou `"20:30"`).
-- `"nome"`: Título curto sem acentos, sem cedilha e sem caracteres especiais para nome de arquivo (ex: `"Titulo Curto Sem Acentos"`).
-- `"title"`: Título otimizado para SEO e retenção no YouTube Shorts e Kwai (com acentuação normal em PT-BR).
-- `"start"`: Número float em segundos exatos do início do corte (ex: `120.500`).
-- `"end"`: Número float em segundos exatos do fim do corte (ex: `195.240`).
-- `"titulo_capa"`: Frase curta para Título na tela / Capa com selo de impacto em caixa alta no início (ex: `"RECADO DIRETO: '...'"`, `"UTILIDADE PÚBLICA: '...'"`, `"ALERTA URGENTE: '...'"`) pensada para segurar o scroll.
-- `"texto_publicacao"`: Texto completo da publicação estruturado em 4 partes curtas (separadas por quebra de linha `\\n\\n`): (1) contextualização rápida em uma frase, (2) citação limpa e fluente dos melhores trechos da fala, (3) fecho analítico reforçando o impacto prático e (4) CTA direto incentivando comentários (algoritmo do YouTube) e compartilhamento em grupos (alcance no Kwai).
-- `"hashtags"`: Array ou string com exatamente 5 hashtags, sempre começando com `#PolíticaDireta` seguida por 4 tags específicas de alto volume do tema.
-
-TRANSCRIÇÃO SRT ANOTADA:
-{srt_anotado}
-""".strip()
+    prompt = carregar_prompt(video_filename, max_cortes, srt_anotado)
 
     generation_config = {
         "temperature": 0.3,
@@ -224,7 +207,6 @@ TRANSCRIÇÃO SRT ANOTADA:
             horario = horario_padrao
 
         cortes_normalizados.append({
-            "ordem_local": idx,
             "horario_sugerido": horario,
             "nome": limpar_nome_curto(str(item.get("nome", f"Corte {idx}"))),
             "video_path": video_filename,
@@ -240,45 +222,17 @@ TRANSCRIÇÃO SRT ANOTADA:
 
 
 # =====================================================================
-# 4. ATUALIZAÇÃO DO CORTES.PY, MANIFESTO JSON E KIT DE PUBLICAÇÃO (.MD)
+# 4. MANIFESTO (temp/tarefas_corte.json) E KIT DE PUBLICAÇÃO (.MD)
 # =====================================================================
-
-def formatar_bloco_tarefas_python(tarefas: list[dict[str, Any]]) -> str:
-    """Gera o código Python formatado da variável TAREFAS_DE_CORTE com comentários de tempo."""
-    linhas = ["TAREFAS_DE_CORTE = ["]
-    total = len(tarefas)
-
-    for idx, t in enumerate(tarefas, start=1):
-        virgula_obj = "," if idx < total else ""
-        comment_start = seconds_to_srt_time(t["start"])
-        comment_end = seconds_to_srt_time(t["end"])
-
-        linhas.append("    {")
-        linhas.append(f'        "id": {t["id"]},')
-        linhas.append(f'        "ordem": {t["ordem"]},')
-        linhas.append(f'        "horario_sugerido": {json.dumps(t["horario_sugerido"], ensure_ascii=False)},')
-        linhas.append(f'        "nome": {json.dumps(t["nome"], ensure_ascii=False)},')
-        linhas.append(f'        "video_path": {json.dumps(t["video_path"], ensure_ascii=False)},')
-        linhas.append(f'        "title": {json.dumps(t["title"], ensure_ascii=False)},')
-        linhas.append(f'        "start": {t["start"]:.3f},  # {comment_start}')
-        linhas.append(f'        "end": {t["end"]:.3f}     # {comment_end}')
-        linhas.append(f"    }}{virgula_obj}")
-
-    linhas.append("]")
-    return "\n".join(linhas)
-
 
 def formatar_kit_publicacao_markdown(tarefas: list[dict[str, Any]]) -> str:
     """
-    Formata o documento completo contendo o bloco Python TAREFAS_DE_CORTE
-    seguido do Kit de Publicação (YouTube Shorts e Kwai) no padrão Política Direta.
+    Kit de Publicação (YouTube Shorts e Kwai) no padrão Política Direta,
+    com todos os cortes que ainda não foram publicados.
     """
-    bloco_python = formatar_bloco_tarefas_python(tarefas)
     partes = [
-        "# Planejamento de Cortes — Política Direta (YouTube Shorts & Kwai)\n",
-        "```python",
-        bloco_python,
-        "```\n",
+        "# Kit de Publicação — Política Direta (YouTube Shorts & Kwai)\n",
+        "> Gerado a partir de `temp/tarefas_corte.json` (cortes com status diferente de `publicado`).\n",
         "---\n",
     ]
 
@@ -288,9 +242,12 @@ def formatar_kit_publicacao_markdown(tarefas: list[dict[str, Any]]) -> str:
         duracao = round(t["end"] - t["start"], 1)
 
         partes.append(
-            f"### Corte {t['id']} (Ordem: {t['ordem']} | Horário Sugerido: {t['horario_sugerido']})"
+            f"### Corte `{t['id']}` (Ordem: {t['ordem']} | Horário Sugerido: {t['horario_sugerido']} "
+            f"| Status: {t.get('status', manifesto.STATUS_PENDENTE)})"
         )
         partes.append(f"**{t['title']}** (`{ts_ini} --> {ts_fim}` | `{duracao}s` | Origem: `{t['video_path']}`)\n")
+        if t.get("arquivo_final"):
+            partes.append(f"* **Arquivo renderizado:** `{t['arquivo_final']}`")
         partes.append(f"* **Título na tela / Capa:** {t.get('titulo_capa', '')}")
         partes.append("* **Texto da publicação:**")
 
@@ -306,38 +263,14 @@ def formatar_kit_publicacao_markdown(tarefas: list[dict[str, Any]]) -> str:
     return "\n".join(partes)
 
 
-def atualizar_arquivos_saida(tarefas: list[dict[str, Any]]) -> None:
-    """
-    1. Substitui TAREFAS_DE_CORTE em cortes.py
-    2. Salva o manifesto completo (com kit de publicação) em temp/tarefas_corte.json
-    3. Salva o Kit de Publicação formatado em cortes_prontos/kit_publicacao.md
-    """
-    if not CORTES_PY_FILE.exists():
-        raise FileNotFoundError(f"Arquivo '{CORTES_PY_FILE}' não encontrado.")
-
-    conteudo = CORTES_PY_FILE.read_text(encoding="utf-8")
-    novo_bloco = formatar_bloco_tarefas_python(tarefas)
-
-    padrao = re.compile(
-        r"TAREFAS_DE_CORTE\s*=\s*\[.*?\n\]",
-        re.DOTALL,
-    )
-
-    if not padrao.search(conteudo):
-        raise RuntimeError("Não foi possível localizar o bloco TAREFAS_DE_CORTE em cortes.py.")
-
-    novo_conteudo = padrao.sub(lambda _: novo_bloco, conteudo, count=1)
-    CORTES_PY_FILE.write_text(novo_conteudo, encoding="utf-8")
-
-    TEMP_DIR.mkdir(parents=True, exist_ok=True)
-    TAREFAS_JSON_FILE.write_text(
-        json.dumps(tarefas, indent=2, ensure_ascii=False),
+def gravar_kit_publicacao(tarefas: list[dict[str, Any]]) -> None:
+    """Regenera cortes_prontos/kit_publicacao.md com os cortes ainda não publicados."""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    abertos = [t for t in tarefas if t.get("status") != manifesto.STATUS_PUBLICADO]
+    KIT_PUBLICACAO_MD_FILE.write_text(
+        formatar_kit_publicacao_markdown(abertos),
         encoding="utf-8",
     )
-
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    kit_md = formatar_kit_publicacao_markdown(tarefas)
-    KIT_PUBLICACAO_MD_FILE.write_text(kit_md, encoding="utf-8")
 
 
 # =====================================================================
@@ -485,9 +418,13 @@ def main() -> None:
             print("⚠️ Nenhum arquivo válido selecionado.")
             sys.exit(0)
 
-    todas_tarefas: list[dict[str, Any]] = []
-    contador_id = 1
+    try:
+        tarefas = manifesto.carregar()
+    except Exception as e:
+        print(f"❌ Não foi possível ler o manifesto: {e}")
+        sys.exit(1)
 
+    novos_cortes = 0
     print(f"\n🤖 Iniciando curadoria 'Política Direta' com o modelo '{args.modelo}'...\n")
 
     for srt_path in alvos:
@@ -506,46 +443,43 @@ def main() -> None:
             print(f" ⚠️ Nenhum corte retornado para '{srt_path.name}'.\n")
             continue
 
-        for corte in cortes_gerados:
-            tarefa = {
-                "id": contador_id,
-                "ordem": contador_id,
-                "horario_sugerido": corte["horario_sugerido"],
-                "nome": corte["nome"],
-                "video_path": corte["video_path"],
-                "title": corte["title"],
-                "start": corte["start"],
-                "end": corte["end"],
-                "titulo_capa": corte["titulo_capa"],
-                "texto_publicacao": corte["texto_publicacao"],
-                "hashtags": corte["hashtags"],
-            }
-            todas_tarefas.append(tarefa)
-            duracao = round(corte["end"] - corte["start"], 1)
+        video_path = srt_path.with_suffix(".mp4").name
+        tarefas, sobrescritas = manifesto.substituir_cortes_do_video(
+            tarefas, video_path, cortes_gerados
+        )
+        # Salva a cada vídeo: se uma análise posterior falhar, nada se perde.
+        manifesto.salvar(tarefas)
+
+        if sobrescritas:
             print(
-                f"   ✅ Corte #{contador_id} ({duracao}s | {corte['horario_sugerido']}): "
-                f"{corte['nome']}\n"
-                f"      📌 Título: {corte['title']}\n"
-                f"      🖼️  Capa  : {corte['titulo_capa']}\n"
-                f"      #️⃣  Tags  : {corte['hashtags']}"
+                f" ⚠️ {len(sobrescritas)} corte(s) já renderizado(s) deste vídeo foram "
+                "substituídos pela nova análise (os arquivos em cortes_prontos/ foram mantidos)."
             )
-            contador_id += 1
+
+        for t in (x for x in tarefas if x["video_path"] == video_path and x["status"] == manifesto.STATUS_PENDENTE):
+            duracao = round(t["end"] - t["start"], 1)
+            print(
+                f"   ✅ Corte {t['id']} ({duracao}s | {t['horario_sugerido']}): {t['nome']}\n"
+                f"      📌 Título: {t['title']}\n"
+                f"      🖼️  Capa  : {t['titulo_capa']}\n"
+                f"      #️⃣  Tags  : {t['hashtags']}"
+            )
+            novos_cortes += 1
 
         registrar_srt_analisado(srt_path.name)
         print()
 
-    if not todas_tarefas:
+    if not novos_cortes:
         print("⚠️ Nenhuma tarefa de corte foi gerada.")
         sys.exit(1)
 
-    atualizar_arquivos_saida(todas_tarefas)
+    gravar_kit_publicacao(tarefas)
     print("===================================================")
-    print(f"🎯 {len(todas_tarefas)} corte(s) 'Política Direta' gravado(s) com sucesso!")
-    print(f"📝 Atualizado        : {CORTES_PY_FILE}")
-    print(f"📦 Manifesto JSON    : {TAREFAS_JSON_FILE}")
+    print(f"🎯 {novos_cortes} corte(s) 'Política Direta' gravado(s) com sucesso!")
+    print(f"📦 Manifesto         : {manifesto.MANIFESTO_FILE}")
     print(f"📋 Kit de Publicação : {KIT_PUBLICACAO_MD_FILE}")
     print("===================================================")
-    print("Próximo passo: execute 'python cortes.py' para renderizar os vídeos.")
+    print("Próximo passo: execute 'python cortes.py' para renderizar os cortes pendentes.")
 
 
 if __name__ == "__main__":

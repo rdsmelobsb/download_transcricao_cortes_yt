@@ -1,9 +1,9 @@
 [
   {
-    "nome": "UOL",
-    "url": "https://www.youtube.com/@uol/videos",
+    "nome": "TV BRASIL",
+    "url": "https://www.youtube.com/@tvbrasil/videos",
     "ativo": true,
-    "max_recentes": 3,
+    "max_recentes": 2,
     "duracao_min_segundos": 180,
     "duracao_max_segundos": null
   },
@@ -11,16 +11,33 @@
     "nome": "GOV.BR",
     "url": "https://www.youtube.com/@canalgov/videos",
     "ativo": true,
-    "max_recentes": 3,
+    "max_recentes": 2,
     "duracao_min_segundos": 180,
     "duracao_max_segundos": null
   },
    {
-    "nome": "MIDIA NINJA",
-    "url": "https://www.youtube.com/channel/UCwefw3viiiaxprsV6jgJvEA/videos",
+    "nome": "CANAL DO LULA",
+    "url": "https://www.youtube.com/@LulaOficial/videos?view=2&sort=dd&live_view=503&shelf_id=5",
     "ativo": true,
-    "max_recentes": 3,
+    "max_recentes": 2,
     "duracao_min_segundos": 180,
+    "duracao_max_segundos": null
+  },
+   {
+    "nome": "CAMARA DOS DEPUTADOS",
+    "url": "https://www.youtube.com/@camaradosdeputadosoficial/videos",
+    "ativo": true,
+    "max_recentes": 2
+    "duracao_min_segundos": 60,
+    "duracao_max_segundos": null
+  },
+  ,
+   {
+    "nome": "SENADO FEDERAL
+    "url": "https://www.youtube.com/@tvsenado/videos",
+    "ativo": true,
+    "max_recentes": 2
+    "duracao_min_segundos": 60,
     "duracao_max_segundos": null
   }
 ]
