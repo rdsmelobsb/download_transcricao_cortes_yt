@@ -18,5 +18,6 @@ token.json
 # Pastas de saída, mídias e temporárias
 temp/
 cortes_prontos/
+scratch/
 *.mp4
 *.srt

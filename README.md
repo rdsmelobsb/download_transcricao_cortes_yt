@@ -210,6 +210,23 @@ python publicar_kwai.py --inspecionar        # inspeciona botões e IDs da tela 
 
 ---
 
+### Etapa 7: Auditoria de Desempenho e Retroalimentação IA (`avaliar_metricas.py`)
+
+Audita em paralelo todos os vídeos postados no YouTube Shorts, coleta visualizações, curtidas e comentários, salva o histórico no manifesto e retroalimenta o Gemini com os padrões vencedores:
+
+```powershell
+python avaliar_metricas.py            # executa a auditoria em paralelo de todos os cortes
+python avaliar_metricas.py --workers 8  # define 8 threads paralelas
+```
+
+**O que esta etapa faz automaticamente:**
+1. Atualiza `temp/tarefas_corte.json` com o bloco `metricas_yt` de cada vídeo.
+2. Gera o painel executivo em Markdown em `cortes_prontos/relatorio_desempenho_yt.md`.
+3. Clusteriza os fatores de sucesso (duração mais assistida, selos de capa com maior conversão e horários de pico) e exporta para `prompts/padroes_vencedores.json`.
+4. O `analisar_srt.py` consome essa inteligência automaticamente na próxima curadoria, instruindo o Gemini a priorizar falas e ganchos com as características que mais funcionaram com o seu público real.
+
+---
+
 ## ⏰ Agendamento no Windows (Task Scheduler)
 
 Para rodar o pipeline no **Agendador de Tarefas do Windows** (`taskschd.msc`):
@@ -228,11 +245,14 @@ Para rodar o pipeline no **Agendador de Tarefas do Windows** (`taskschd.msc`):
 ```text
 ├── .agent/skills/                  # Diretrizes e arquitetura operacional das skills de IA
 ├── prompts/
-│   └── politica_direta.md          # Diretrizes editoriais e contrato JSON da curadoria IA
-├── cortes_prontos/                 # Vídeos verticais renderizados e kit_publicacao.md (ignorado no Git)
+│   ├── politica_direta.md          # Diretrizes editoriais e contrato JSON da curadoria IA
+│   └── padroes_vencedores.json     # Inteligência e diretrizes de retroalimentação extraídas das métricas
+├── cortes_prontos/                 # Vídeos verticais renderizados, kit_publicacao.md e relatórios (ignorado no Git)
+│   └── relatorio_desempenho_yt.md  # Dashboard executivo de métricas e ranking do YouTube
 ├── temp/                           # Vídeos brutos (.mp4), legendas (.srt) e manifesto de tarefas (ignorado no Git)
 │   └── tarefas_corte.json          # Fonte única de verdade de todo o pipeline
-├── analisar_srt.py                 # Curadoria de cortes e kit de publicação via Gemini API
+├── analisar_srt.py                 # Curadoria de cortes com retroalimentação contínua via Gemini API
+├── avaliar_metricas.py             # Auditoria de métricas reais do YouTube e motor de feedback loop
 ├── canais.json                     # Lista de canais do YouTube monitorados e filtros de duração
 ├── cortes.py                       # Renderização automatizada em 5 modos FFmpeg
 ├── download.py                     # Download manual e monitoramento em lote via yt-dlp

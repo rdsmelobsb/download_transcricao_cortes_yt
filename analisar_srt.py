@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent
 TEMP_DIR = BASE_DIR / "temp"
 OUTPUT_DIR = BASE_DIR / "cortes_prontos"
 PROMPT_FILE = BASE_DIR / "prompts" / "politica_direta.md"
+PADROES_VENCEDORES_FILE = BASE_DIR / "prompts" / "padroes_vencedores.json"
 KIT_PUBLICACAO_MD_FILE = OUTPUT_DIR / "kit_publicacao.md"
 HISTORICO_SRT_FILE = BASE_DIR / "historico_srt_analisados.txt"
 ENV_FILE = BASE_DIR / ".env"
@@ -131,6 +132,23 @@ def configurar_api_gemini() -> None:
     genai.configure(api_key=api_key)
 
 
+def carregar_diretriz_padroes_vencedores() -> str:
+    """
+    Lê prompts/padroes_vencedores.json gerado pelo avaliar_metricas.py
+    e retorna o bloco de inteligência editorial para retroalimentar a IA.
+    """
+    if not PADROES_VENCEDORES_FILE.exists():
+        return ""
+    try:
+        dados = json.loads(PADROES_VENCEDORES_FILE.read_text(encoding="utf-8"))
+        diretriz = dados.get("diretriz_retroalimentacao", "").strip()
+        if diretriz and dados.get("total_publicos", 0) > 0:
+            return f"\n{diretriz}\n"
+    except Exception as e:
+        print(f"⚠️ Aviso ao carregar padrões vencedores: {e}")
+    return ""
+
+
 def carregar_prompt(video_filename: str, max_cortes: int, srt_anotado: str) -> str:
     """Lê prompts/politica_direta.md e preenche os placeholders {{...}}."""
     if not PROMPT_FILE.exists():
@@ -139,10 +157,12 @@ def carregar_prompt(video_filename: str, max_cortes: int, srt_anotado: str) -> s
             "-> Restaure o arquivo prompts/politica_direta.md."
         )
     texto = PROMPT_FILE.read_text(encoding="utf-8")
+    padroes_texto = carregar_diretriz_padroes_vencedores()
     substituicoes = {
         "{{VIDEO_FILENAME}}": video_filename,
         "{{MAX_CORTES}}": str(max_cortes),
         "{{TRANSCRICAO_SRT}}": srt_anotado,
+        "{{PADROES_VENCEDORES}}": padroes_texto,
     }
     for chave, valor in substituicoes.items():
         texto = texto.replace(chave, valor)

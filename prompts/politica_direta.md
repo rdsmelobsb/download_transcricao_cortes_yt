@@ -31,5 +31,7 @@ Retorne APENAS um array JSON válido onde cada objeto contenha exatamente as cha
 - `"texto_publicacao"`: Texto completo da publicação estruturado em 4 partes curtas (separadas por quebra de linha `\n\n`): (1) contextualização rápida em uma frase, (2) citação limpa e fluente dos melhores trechos da fala, (3) fecho analítico reforçando o impacto prático e (4) CTA direto incentivando comentários (algoritmo do YouTube) e compartilhamento em grupos (alcance no Kwai).
 - `"hashtags"`: Array ou string com exatamente 5 hashtags, sempre começando com `#PolíticaDireta` seguida por 4 tags específicas de alto volume do tema.
 
+{{PADROES_VENCEDORES}}
+
 TRANSCRIÇÃO SRT ANOTADA:
 {{TRANSCRICAO_SRT}}

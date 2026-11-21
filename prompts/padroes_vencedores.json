@@ -1,0 +1,337 @@
+{
+  "atualizado_em": "2026-11-21T15:49:22",
+  "total_auditados": 42,
+  "total_publicos": 30,
+  "total_agendados": 12,
+  "total_views": 22,
+  "total_likes": 0,
+  "total_comments": 0,
+  "melhor_faixa_duracao": "90s a 100s",
+  "melhores_selos": [
+    "HISTÓRIA VIVA",
+    "PARA TODO O BRASIL",
+    "COBRANÇA FIRME"
+  ],
+  "melhor_horario": "20:30",
+  "ranking_duracao": [
+    {
+      "faixa": "90s a 100s",
+      "media_views": 1.2,
+      "total_views": 6,
+      "qtd": 5
+    },
+    {
+      "faixa": "60s a 75s",
+      "media_views": 1.1,
+      "total_views": 10,
+      "qtd": 9
+    },
+    {
+      "faixa": "75s a 90s",
+      "media_views": 0.7,
+      "total_views": 5,
+      "qtd": 7
+    },
+    {
+      "faixa": "45s a 60s",
+      "media_views": 0.1,
+      "total_views": 1,
+      "qtd": 9
+    }
+  ],
+  "ranking_selos": [
+    {
+      "selo": "HISTÓRIA VIVA",
+      "media_views": 6.0,
+      "total_views": 6,
+      "qtd": 1
+    },
+    {
+      "selo": "PARA TODO O BRASIL",
+      "media_views": 5.0,
+      "total_views": 5,
+      "qtd": 1
+    },
+    {
+      "selo": "COBRANÇA FIRME",
+      "media_views": 3.0,
+      "total_views": 3,
+      "qtd": 1
+    },
+    {
+      "selo": "CONTRASTE DIRETO",
+      "media_views": 2.0,
+      "total_views": 2,
+      "qtd": 1
+    },
+    {
+      "selo": "RELATO COMOVENTE",
+      "media_views": 2.0,
+      "total_views": 2,
+      "qtd": 1
+    },
+    {
+      "selo": "ECONOMIA REAL",
+      "media_views": 0.5,
+      "total_views": 1,
+      "qtd": 2
+    },
+    {
+      "selo": "UTILIDADE PÚBLICA",
+      "media_views": 0.3,
+      "total_views": 2,
+      "qtd": 6
+    },
+    {
+      "selo": "ALERTA URGENTE",
+      "media_views": 0.3,
+      "total_views": 1,
+      "qtd": 3
+    },
+    {
+      "selo": "RECADO DIRETO",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 3
+    },
+    {
+      "selo": "DEBATE QUENTE",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "SOBERANIA",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "ANÁLISE DIRETA",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "COBRANÇA FORTE",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "INVESTIGAÇÃO ABERTA",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "CONTA NÃO FECHA",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "DEBATE ECONÔMICO",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "CONTRASTE POLÍTICO",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "COBRANÇA DIRETA",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "RETA FINAL",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "CONTAS PÚBLICAS",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    }
+  ],
+  "ranking_horarios": [
+    {
+      "horario": "20:30",
+      "media_views": 1.3,
+      "total_views": 13,
+      "qtd": 10
+    },
+    {
+      "horario": "17:30",
+      "media_views": 0.6,
+      "total_views": 6,
+      "qtd": 10
+    },
+    {
+      "horario": "11:30",
+      "media_views": 0.3,
+      "total_views": 3,
+      "qtd": 10
+    }
+  ],
+  "top_videos": [
+    {
+      "id": "2EcokGX0v6s_3",
+      "video_id": "6K3GxH2eKb0",
+      "url": "https://youtube.com/shorts/6K3GxH2eKb0",
+      "title": "O emocionante reconhecimento às pioneiras do futebol feminino na exposição Elas no Jogo",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "HISTÓRIA VIVA: 'É SÓ GRATIDÃO POR ESSE RECONHECIMENTO'",
+      "duracao": 74.7,
+      "video_origem": "20261119_2EcokGX0v6s_Projeto_Elas_no_Jogo_lanca_exposicao_itinerante_gratuita.mp4",
+      "views": 6,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:49:10"
+    },
+    {
+      "id": "jYFwbYTu8E4_3",
+      "video_id": "bPdimSxcEdU",
+      "url": "https://youtube.com/shorts/bPdimSxcEdU",
+      "title": "Universidade Federal do Esporte terá EAD para todo o Brasil e fiscalização da Câmara",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "PARA TODO O BRASIL: 'Terá cursos presenciais e EAD'",
+      "duracao": 95.0,
+      "video_origem": "20261119_jYFwbYTu8E4_Julio_Cesar_Ribeiro_explica_como_funcionara_a_Universidade.mp4",
+      "views": 5,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:49:00"
+    },
+    {
+      "id": "URSDs-ybsRU_2",
+      "video_id": "2F95WK5MRjE",
+      "url": "https://youtube.com/shorts/2F95WK5MRjE",
+      "title": "De Temer a Lula: por que a regulamentação das bets falhou?",
+      "horario_sugerido": "17:30",
+      "titulo_capa": "COBRANÇA FIRME: 'Trataram as bets só para arrecadar, e não como saúde'",
+      "duracao": 83.7,
+      "video_origem": "20261120_URSDs-ybsRU_Me_conta_+_Dep._Pedro_Campos_-_Bets_-_20_11_26.mp4",
+      "views": 3,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:49:09"
+    },
+    {
+      "id": "CSPfVyuG1sI_2",
+      "video_id": "xHtsGKDIRdA",
+      "url": "https://youtube.com/shorts/xHtsGKDIRdA",
+      "title": "De vilão a referência: Brasil vence Prêmio Raio de Luz com queda histórica no desmatamento",
+      "horario_sugerido": "17:30",
+      "titulo_capa": "CONTRASTE DIRETO: 'O Brasil mostrou que é possível!'",
+      "duracao": 76.5,
+      "video_origem": "20261117_CSPfVyuG1sI_BRASIL_-_O_RAIO_DE_LUZ_NA_PROTECAO_DO_MEIO_AMBIENTE.mp4",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:48:53"
+    },
+    {
+      "id": "TIVjSUMTK-k_3",
+      "video_id": "J6hc9BOm3cQ",
+      "url": "https://youtube.com/shorts/J6hc9BOm3cQ",
+      "title": "O desespero de uma mãe em Bacabal: relato emocionante sobre o desaparecimento dos filhos de 4 e 6 anos",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "RELATO COMOVENTE: 'Quando cheguei, era só desespero e ninguém encontrava'",
+      "duracao": 67.5,
+      "video_origem": "20261120_TIVjSUMTK-k_Diligencias_em_Bacabal_MA_acompanham_buscas_por_criancas.mp4",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:49:04"
+    },
+    {
+      "id": "CSPfVyuG1sI_1",
+      "video_id": "Cf4MZM8E5SA",
+      "url": "https://youtube.com/shorts/Cf4MZM8E5SA",
+      "title": "O mercado resolve tudo? O recado direto do BNDES sobre economia, renda e Amazônia",
+      "horario_sugerido": "11:30",
+      "titulo_capa": "ECONOMIA REAL: 'O mercado não resolve tudo!'",
+      "duracao": 50.0,
+      "video_origem": "20261117_CSPfVyuG1sI_BRASIL_-_O_RAIO_DE_LUZ_NA_PROTECAO_DO_MEIO_AMBIENTE.mp4",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:48:53"
+    },
+    {
+      "id": "jYFwbYTu8E4_1",
+      "video_id": "334kQizIlRw",
+      "url": "https://youtube.com/shorts/334kQizIlRw",
+      "title": "Universidade Federal do Esporte já tem data para abrir e prevê mais de 3 mil alunos",
+      "horario_sugerido": "11:30",
+      "titulo_capa": "UTILIDADE PÚBLICA: 'Mais de 3 mil alunos a partir de 2027'",
+      "duracao": 64.0,
+      "video_origem": "20261119_jYFwbYTu8E4_Julio_Cesar_Ribeiro_explica_como_funcionara_a_Universidade.mp4",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:48:59"
+    },
+    {
+      "id": "TIVjSUMTK-k_2",
+      "video_id": "ngI1RJ-7TK4",
+      "url": "https://youtube.com/shorts/ngI1RJ-7TK4",
+      "title": "Alerta Vermelho da Interpol: Senado cobra federalização nas buscas por crianças em Bacabal",
+      "horario_sugerido": "17:30",
+      "titulo_capa": "ALERTA URGENTE: 'Caso entrou na Interpol e há suspeita de crianças fora do país'",
+      "duracao": 92.2,
+      "video_origem": "20261120_TIVjSUMTK-k_Diligencias_em_Bacabal_MA_acompanham_buscas_por_criancas.mp4",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:49:04"
+    },
+    {
+      "id": "TO3oHDGPbh0_1",
+      "video_id": "4vcu9vDqHwo",
+      "url": "https://youtube.com/shorts/4vcu9vDqHwo",
+      "title": "Protocolo Nacional para Crianças Desaparecidas: Senado Propõe Ação Imediata e Mais Verba",
+      "horario_sugerido": "11:30",
+      "titulo_capa": "UTILIDADE PÚBLICA: 'NOVO PROTOCOLO NACIONAL E MAIS VERBA NAS BUSCAS'",
+      "duracao": 64.0,
+      "video_origem": "20261120_TO3oHDGPbh0_Edson_Davi_-_desaparecimento_do_menino_de_6_anos_no_Rio_mob.mp4",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:49:04"
+    },
+    {
+      "id": "91kIna3CvP4_3",
+      "video_id": "MOTl25Nj2Vg",
+      "url": "https://youtube.com/shorts/MOTl25Nj2Vg",
+      "title": "Lula agradece 4º mandato, fala em soberania e critica Big Techs nas eleições",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "RECADO DIRETO: Lula critica Big Techs e diz que 'o Brasil não cabe no quintal de ninguém'",
+      "duracao": 94.9,
+      "video_origem": "20261108_91kIna3CvP4_Presidente_Lula_faz_pronunciamento_ao_Brasil.mp4",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-21T15:48:53"
+    }
+  ],
+  "diretriz_retroalimentacao": "### 📊 INTELIGÊNCIA EDITORIAL BASEADA EM DESEMPENHO REAL DO CANAL:\n- Faixa de duração mais assistida pela audiência recente: **90s a 100s** (priorize cortes nesta faixa).\n- Selos de título de capa com maior engajamento comprovado: **HISTÓRIA VIVA, PARA TODO O BRASIL, COBRANÇA FIRME**.\n- Horário com maior retenção orgânica na grade: **20:30**.\n- Exemplos reais de cortes com melhor engajamento recente no canal (inspire-se na estrutura, tom e temática):\n  * \"O emocionante reconhecimento às pioneiras do futebol feminino na exposição Elas no Jogo\" (6 views, 74.7s, selo: HISTÓRIA VIVA)\n  * \"Universidade Federal do Esporte terá EAD para todo o Brasil e fiscalização da Câmara\" (5 views, 95.0s, selo: PARA TODO O BRASIL)\n  * \"De Temer a Lula: por que a regulamentação das bets falhou?\" (3 views, 83.7s, selo: COBRANÇA FIRME)\n-> Na seleção dos trechos, dê preferência a falas com dinâmicas, ganchos e densidade argumentativa semelhantes aos campeões de visualizações."
+}

@@ -13,6 +13,7 @@ Esta skill define a arquitetura, os contratos de dados e as regras operacionais 
 * `temp/tarefas_corte.json`: **Manifesto acumulativo e fonte única de verdade** dos cortes. Gerado pelo `analisar_srt.py`, atualizado pelo `cortes.py` e finalizado pelo `publicar_youtube.py` / `publicar_kwai.py`. Cada item tem `id` estável (`<video_id>_<n>`), `ordem`, `horario_sugerido`, `nome`, `video_path`, `title`, `start`, `end`, `titulo_capa`, `texto_publicacao`, `hashtags`, `status` (`pendente` → `renderizado` → `publicado`), `criado_em`, `arquivo_final`, `modo`, `youtube_video_id`, `youtube_url`, `publicado_kwai` e `kwai_publicado_em`.
 * `publicar_youtube.py`: Script de upload e agendamento nativo no YouTube via YouTube Data API v3 oficial (OAuth2).
 * `publicar_kwai.py`: Script de publicação no app Android do Kwai (`com.kwai.video`) via ADB + `uiautomator2` com ranking inteligente (**Score Kwai**) e envio determinístico via `ACTION_SEND`.
+* `avaliar_metricas.py`: Auditoria de métricas reais do YouTube Shorts via `yt-dlp` em paralelo, geração de dashboard (`relatorio_desempenho_yt.md`) e exportação de padrões de sucesso (`prompts/padroes_vencedores.json`) para retroalimentar a IA.
 * `client_secrets.json` e `token.json`: Credenciais OAuth da Google API (protegidas no `.gitignore`).
 * `prompts/politica_direta.md`: Prompt editorial lido pelo `analisar_srt.py` (placeholders `{{VIDEO_FILENAME}}`, `{{MAX_CORTES}}`, `{{TRANSCRICAO_SRT}}`). Ajustes de curadoria devem ser feitos neste arquivo, nunca no código.
 * `cortes_prontos/`: Diretório de saída dos cortes renderizados (`corte_<id>_<sufixo_formato>_<nome_limpo>.mp4`).
@@ -113,6 +114,16 @@ Selecionar o modo adequado ao vídeo:
   * `python publicar_kwai.py --top 1 --preparar` (envia e cola legenda, pausando antes de publicar)
   * `python publicar_kwai.py --top 3` (publicação automática em lote com intervalo anti-bot)
   * `python publicar_kwai.py --inspecionar` (lista textos e resource-ids da tela atual do celular)
+
+### Etapa 7: Auditoria de Métricas e Retroalimentação IA (`avaliar_metricas.py`)
+
+* **Coleta de Métricas em Paralelo:** Executar `python avaliar_metricas.py` (ou com `--workers 8`). Consulta o YouTube via `yt-dlp` em multi-thread sem gastar cota da API, capturando `views`, `likes`, `comments` e diferenciando vídeos já públicos de vídeos agendados (`Private`).
+* **Ciclo de Retroalimentação (Feedback Loop):**
+  1. Atualiza o manifesto `temp/tarefas_corte.json` com o bloco `metricas_yt` de cada corte publicado.
+  2. Clusteriza os dados identificando: faixa de duração vencedora (ex: `90s a 100s`), selos de capa com maior conversão e horários de pico.
+  3. Gera o dashboard executivo em Markdown em `cortes_prontos/relatorio_desempenho_yt.md`.
+  4. Exporta a diretriz de audiência para `prompts/padroes_vencedores.json`.
+  5. O `analisar_srt.py` consome automaticamente essa diretriz e injeta no prompt do Gemini, fazendo a IA priorizar trechos e ganchos semelhantes aos campeões de visualizações do canal.
 
 ## 3. Regras de Segurança e Governança
 
