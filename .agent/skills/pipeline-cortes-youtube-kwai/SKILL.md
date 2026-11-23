@@ -11,9 +11,12 @@ Esta skill define a arquitetura, os contratos de dados e as regras operacionais 
 
 * `temp/`: Diretório central de entrada e trabalho. Armazena vídeos baixados (`<YYYYMMDD>_<video_id>_<titulo>.mp4` ou `<job_id>_raw.mp4`) e suas transcrições correspondentes (`.srt`).
 * `temp/tarefas_corte.json`: **Manifesto acumulativo e fonte única de verdade** dos cortes. Gerado pelo `analisar_srt.py`, atualizado pelo `cortes.py` e finalizado pelo `publicar_youtube.py` / `publicar_kwai.py`. Cada item tem `id` estável (`<video_id>_<n>`), `ordem`, `horario_sugerido`, `nome`, `video_path`, `title`, `start`, `end`, `titulo_capa`, `texto_publicacao`, `hashtags`, `status` (`pendente` → `renderizado` → `publicado`), `criado_em`, `arquivo_final`, `modo`, `youtube_video_id`, `youtube_url`, `publicado_kwai` e `kwai_publicado_em`.
-* `publicar_youtube.py`: Script de upload e agendamento nativo no YouTube via YouTube Data API v3 oficial (OAuth2).
-* `publicar_kwai.py`: Script de publicação no app Android do Kwai (`com.kwai.video`) via ADB + `uiautomator2` com ranking inteligente (**Score Kwai**) e envio determinístico via `ACTION_SEND`.
-* `avaliar_metricas.py`: Auditoria de métricas reais do YouTube Shorts via `yt-dlp` em paralelo, geração de dashboard (`relatorio_desempenho_yt.md`) e exportação de padrões de sucesso (`prompts/padroes_vencedores.json`) para retroalimentar a IA.
+* `publicar_youtube.py` + `agendador.py`: Upload e agendamento sem colisões no YouTube via API v3 (OAuth2), com espaçamento mínimo de 120 min, rotação temática diária e transbordo automático.
+* `publicar_kwai.py`: Publicação no app Android do Kwai (`com.kwai.video`) via ADB + `uiautomator2` (auto-conecta em celular USB ou BlueStacks `127.0.0.1:6610`), com Score Kwai, envio determinístico via `ACTION_SEND`, espera dinâmica de processamento e flag `--sim`.
+* `avaliar_metricas.py` + `avaliar_metricas_kwai.py`: Auditoria de métricas reais do YouTube (`yt-dlp` paralelo) e do Kwai (ADB), gerando dashboards (`relatorio_desempenho_yt.md` e `relatorio_desempenho_kwai.md`) e retroalimentando `analisar_srt.py` via `prompts/padroes_vencedores.json` e `prompts/padroes_vencedores_kwai.json`.
+* `validador_packaging.py`: Linter PT-BR de CTR (`yt-package`) acoplado ao `analisar_srt.py` que garante complementaridade entre `title` e `titulo_capa`.
+* `pesquisar_virais.py`: Radar semanal de outliers políticos BR usando `.agent/skills/yt-viral/swipe.py` (salva `cortes_prontos/outliers_politica_br.md`).
+* `pipeline_youtube.py`, `pipeline_kwai.py` e `agendar_pipelines_windows.ps1`: Orquestradores diários com lockfile e logs em `logs/`, agendados no Windows Task Scheduler (**08:00/17:00 YouTube** e **09:00/18:00 Kwai**).
 * `client_secrets.json` e `token.json`: Credenciais OAuth da Google API (protegidas no `.gitignore`).
 * `prompts/politica_direta.md`: Prompt editorial lido pelo `analisar_srt.py` (placeholders `{{VIDEO_FILENAME}}`, `{{MAX_CORTES}}`, `{{TRANSCRICAO_SRT}}`). Ajustes de curadoria devem ser feitos neste arquivo, nunca no código.
 * `cortes_prontos/`: Diretório de saída dos cortes renderizados (`corte_<id>_<sufixo_formato>_<nome_limpo>.mp4`).
@@ -139,3 +142,10 @@ Selecionar o modo adequado ao vídeo:
 * **Idioma e Plataformas:** Escrever todos os títulos e textos estritamente em Português do Brasil (PT-BR) e direcionar entregas exclusivamente para **YouTube Shorts** e **Kwai** (nunca mencionar ou formatar para TikTok).
 * Sempre validar se o `video_path` de cada item do manifesto `temp/tarefas_corte.json` corresponde a um arquivo existente em `temp/` antes de executar `cortes.py`. Nunca editar `cortes.py` para registrar cortes.
 * Ao finalizar um lote de cortes, apresentar um resumo claro listando: vídeo de origem, modo FFmpeg aplicado, horários sugeridos e caminhos dos arquivos gerados em `cortes_prontos/`.
+
+## 4. Contexto Estratégico e Ambiente Ativo
+
+* **Funil de Monetização:** A audiência gerada pelo canal **Política Direta** no Kwai (`rdsdogsLover`, ~13,9 mil seguidores, média ~727 views/vídeo) direciona tráfego para o canal de ofertas/afiliados no Telegram **`t.me/promosgeektech`**, operado pelo projeto irmão `bot_afiliados_magalu` (`C:\Users\RafaelMelo-MGInfo\Desktop\Nova pasta\bot_afiliados_magalu`).
+* **Duração Vencedora Validada (YouTube + Kwai):** **60s a 75s** apresentou o melhor desempenho em ambas as plataformas.
+* **Dispositivos Android ADB:** Celular físico Samsung S25 (`RQGL405VTMR` via USB) ou emulador **BlueStacks 5** (`127.0.0.1:6610`, detectado automaticamente).
+* **Agendamento Diário Ativo no Windows:** `PoliticaDireta_Pipeline_YouTube` (**08:00 e 17:00**, máx. 3 uploads/execução = 6/dia) e `PoliticaDireta_Pipeline_Kwai` (**09:00 e 18:00**, TOP 3 + métricas). Logs em `logs/`.
