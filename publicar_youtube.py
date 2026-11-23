@@ -1,16 +1,17 @@
 """
-Publicador de Vídeos no YouTube via YouTube Data API v3.
+Publicador de Vídeos no YouTube via YouTube Data API v3 com Agendador Inteligente.
 
-Lê os cortes com status 'renderizado' em temp/tarefas_corte.json, faz o upload
-como Shorts, agenda a publicação conforme o horário sugerido e atualiza o manifesto.
+Lê os cortes com status 'renderizado' em temp/tarefas_corte.json, calcula uma
+agenda livre de colisões via agendador.py (respeitando slots ocupados, espaçamento
+mínimo entre Shorts e diversidade temática), faz o upload via API oficial e
+atualiza o manifesto com data/hora exata de publicação.
 """
 
 import argparse
-import os
 import re
 import sys
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
@@ -21,6 +22,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.http import MediaFileUpload
 
+import agendador
 import manifesto
 
 # =====================================================================
@@ -68,7 +70,6 @@ def obter_servico_youtube():
             )
             creds = flow.run_local_server(port=0)
 
-        # Salva o token para as próximas execuções
         TOKEN_FILE.write_text(creds.to_json(), encoding="utf-8")
         print("✅ Autenticação realizada e salva em 'token.json'!\n")
 
@@ -78,32 +79,8 @@ def obter_servico_youtube():
 
 
 # =====================================================================
-# 3. UTILITÁRIOS DE METADADOS E AGENDAMENTO
+# 3. UTILITÁRIOS DE METADADOS
 # =====================================================================
-
-def calcular_data_agendamento(horario_sugerido: str, offset_dias: int = 0) -> str:
-    """
-    Calcula a data e horário no formato ISO 8601 UTC (ex: 2026-11-20T14:30:00Z)
-    para o agendamento no YouTube.
-    O horário sugerido é considerado no fuso horário local de Brasília (UTC-3).
-    """
-    agora = datetime.now()
-    try:
-        horas, minutos = map(int, horario_sugerido.split(":"))
-    except ValueError:
-        horas, minutos = 11, 30
-
-    data_alvo = agora.replace(hour=horas, minute=minutos, second=0, microsecond=0)
-    data_alvo += timedelta(days=offset_dias)
-
-    # Se o horário para hoje já passou (com folga de 15 minutos), joga para amanhã
-    if offset_dias == 0 and data_alvo <= agora + timedelta(minutes=15):
-        data_alvo += timedelta(days=1)
-
-    # Conversão de horário local (Brasília UTC-3) para UTC (+3h)
-    data_utc = data_alvo + timedelta(hours=3)
-    return data_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
-
 
 def formatar_titulo_shorts(titulo: str) -> str:
     """Garante a tag #Shorts no título e respeita o limite de 100 caracteres."""
@@ -134,6 +111,20 @@ def formatar_descricao_completa(tarefa: dict[str, Any]) -> str:
     return "\n\n".join(partes)
 
 
+def localizar_arquivo_video(tarefa: dict[str, Any]) -> Optional[Path]:
+    """Localiza o arquivo .mp4 renderizado correspondente à tarefa."""
+    if tarefa.get("arquivo_final"):
+        candidato = BASE_DIR / tarefa["arquivo_final"]
+        if candidato.exists():
+            return candidato
+
+    id_tarefa = tarefa["id"]
+    for p in OUTPUT_DIR.glob(f"corte_{id_tarefa}_*"):
+        if p.suffix.lower() == ".mp4":
+            return p
+    return None
+
+
 # =====================================================================
 # 4. UPLOAD DO VÍDEO NO YOUTUBE
 # =====================================================================
@@ -143,25 +134,13 @@ def fazer_upload_corte(
     tarefa: dict[str, Any],
     agendar: bool = True,
     privado: bool = False,
-    offset_dias: int = 0
+    dt_brt: Optional[datetime] = None,
+    iso_utc: Optional[str] = None,
 ) -> Optional[str]:
     """
     Envia o corte para o YouTube via API e retorna o ID do vídeo publicado/agendado.
     """
-    caminho_video = None
-    if tarefa.get("arquivo_final"):
-        candidato = BASE_DIR / tarefa["arquivo_final"]
-        if candidato.exists():
-            caminho_video = candidato
-
-    if not caminho_video:
-        # Tenta localizar na pasta cortes_prontos pelo id da tarefa
-        id_tarefa = tarefa["id"]
-        for p in OUTPUT_DIR.glob(f"corte_{id_tarefa}_*"):
-            if p.suffix.lower() == ".mp4":
-                caminho_video = p
-                break
-
+    caminho_video = localizar_arquivo_video(tarefa)
     if not caminho_video or not caminho_video.exists():
         print(f"❌ Erro [{tarefa['id']}]: Arquivo de vídeo renderizado não encontrado!")
         return None
@@ -169,11 +148,10 @@ def fazer_upload_corte(
     titulo_final = formatar_titulo_shorts(tarefa.get("title", "Corte Política Direta"))
     descricao_final = formatar_descricao_completa(tarefa)
 
-    # Extrai tags para os metadados internos do YouTube
     tags_brutas = re.findall(r"#(\w+)", tarefa.get("hashtags", ""))
     tags = list(dict.fromkeys(tags_brutas + ["PolíticaDireta", "Shorts"]))
 
-    body = {
+    body: dict[str, Any] = {
         "snippet": {
             "title": titulo_final,
             "description": descricao_final,
@@ -184,22 +162,19 @@ def fazer_upload_corte(
         },
         "status": {
             "selfDeclaredMadeForKids": False,
-        }
+        },
     }
-
-    horario_sugerido = tarefa.get("horario_sugerido", "11:30")
 
     if privado:
         body["status"]["privacyStatus"] = "private"
-        print(f"🔒 Status: Privado (sem agendamento)")
-    elif agendar:
-        data_iso_utc = calcular_data_agendamento(horario_sugerido, offset_dias=offset_dias)
+        print("🔒 Status: Privado (sem agendamento)")
+    elif agendar and iso_utc and dt_brt:
         body["status"]["privacyStatus"] = "private"
-        body["status"]["publishAt"] = data_iso_utc
-        print(f"📅 Agendando para: {horario_sugerido} ({data_iso_utc} UTC)")
+        body["status"]["publishAt"] = iso_utc
+        print(f"📅 Agendando para: {agendador.formatar_data_br(dt_brt)} ({iso_utc})")
     else:
         body["status"]["privacyStatus"] = "public"
-        print(f"📢 Status: Público imediato")
+        print("📢 Status: Público imediato")
 
     print(f"📤 Fazendo upload de '{caminho_video.name}'...")
     print(f"📌 Título: {titulo_final}")
@@ -208,13 +183,13 @@ def fazer_upload_corte(
         str(caminho_video),
         mimetype="video/mp4",
         resumable=True,
-        chunksize=1024 * 1024 * 4  # Chunks de 4MB
+        chunksize=1024 * 1024 * 4,  # Chunks de 4MB
     )
 
     request = youtube.videos().insert(
         part="snippet,status",
         body=body,
-        media_body=media
+        media_body=media,
     )
 
     response = None
@@ -225,7 +200,7 @@ def fazer_upload_corte(
             print(f"   Progresso do envio: {progresso}%", end="\r")
 
     video_id = response.get("id")
-    print(f"\n✅ Upload concluído com sucesso!")
+    print("\n✅ Upload concluído com sucesso!")
     print(f"🔗 Link do Short: https://youtube.com/shorts/{video_id}\n")
     return video_id
 
@@ -236,7 +211,7 @@ def fazer_upload_corte(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Publica/Agenda cortes renderizados no YouTube via API oficial."
+        description="Publica/Agenda cortes renderizados no YouTube sem colisões de horário."
     )
     parser.add_argument(
         "--id",
@@ -247,7 +222,36 @@ def main() -> None:
     parser.add_argument(
         "--todos",
         action="store_true",
-        help="Publica todos os cortes renderizados pendentes de publicação.",
+        help="Publica automaticamente todos os cortes renderizados pendentes sem perguntar.",
+    )
+    parser.add_argument(
+        "--por-dia",
+        type=int,
+        default=3,
+        help="Quantidade de Shorts por dia na grade automática (1 a 6; padrão: 3).",
+    )
+    parser.add_argument(
+        "--slots",
+        type=str,
+        default=None,
+        help="Horários customizados em BRT separados por vírgula (ex: '09:00,13:00,18:00,21:00').",
+    )
+    parser.add_argument(
+        "--limite",
+        type=int,
+        default=0,
+        help="Limite máximo de vídeos enviados nesta execução (ex: --limite 6 para respeitar cota diária).",
+    )
+    parser.add_argument(
+        "--intervalo-min",
+        type=int,
+        default=agendador.INTERVALO_MINIMO_PADRAO_MIN,
+        help="Intervalo mínimo em minutos entre quaisquer dois Shorts (padrão: 120 min).",
+    )
+    parser.add_argument(
+        "--sem-intercalar",
+        action="store_true",
+        help="Desativa o Round-Robin por vídeo de origem.",
     )
     parser.add_argument(
         "--privado",
@@ -262,19 +266,42 @@ def main() -> None:
     parser.add_argument(
         "--amanha",
         action="store_true",
-        help="Força o agendamento para o dia de amanhã.",
+        help="Começa a preencher slots apenas a partir de amanhã.",
+    )
+    parser.add_argument(
+        "--simular",
+        "--dry-run",
+        dest="simular",
+        action="store_true",
+        help="Simula e exibe o calendário de agendamento sem fazer upload nem alterar o manifesto.",
+    )
+    parser.add_argument(
+        "--agenda",
+        action="store_true",
+        help="Exibe os cortes futuros já agendados no manifesto e encerra.",
     )
 
     args = parser.parse_args()
 
-    # Carrega manifesto
+    # 1. Carrega manifesto
     try:
         tarefas = manifesto.carregar()
     except Exception as e:
         print(f"❌ Erro ao ler manifesto: {e}")
         sys.exit(1)
 
-    # Filtra tarefas prontas para publicação
+    if args.agenda:
+        agendador.imprimir_agenda_atual(tarefas)
+        sys.exit(0)
+
+    # Valida grade de horários antes de qualquer ação
+    try:
+        grade = agendador.obter_grade_horarios(por_dia=args.por_dia, slots_custom=args.slots)
+    except ValueError as e:
+        print(f"❌ Configuração de grade inválida: {e}")
+        sys.exit(1)
+
+    # 2. Filtra tarefas prontas para publicação (com arquivo existente)
     renderizadas = [
         t for t in tarefas
         if t.get("status") == manifesto.STATUS_RENDERIZADO
@@ -291,17 +318,19 @@ def main() -> None:
         if not selecionadas:
             print(f"❌ Nenhum corte renderizado encontrado para os IDs informados: {args.ids}")
             sys.exit(1)
+    elif args.todos or args.simular:
+        selecionadas = renderizadas
     else:
-        # Se não especificou --todos nem --id, mostra interativo
         print("===================================================")
         print("       CORTES PRONTOS PARA POSTAR NO YOUTUBE       ")
         print("===================================================")
         for idx, t in enumerate(renderizadas, start=1):
-            print(f"[{idx}] {t['id']} ({t['horario_sugerido']}): {t['title']}")
+            print(f"[{idx}] {t['id']} (perfil {t.get('horario_sugerido', '11:30')}): {t['title']}")
         print("===================================================")
+        print(f"Grade ativa ({len(grade)}/dia): {', '.join(grade)} | Respiro mínimo: {args.intervalo_min} min")
         print("Opções:")
         print(" - Digite o número do corte (ou vários, ex: 1,2,3)")
-        print(" - Pressione ENTER para postar TODOS os listados")
+        print(" - Pressione ENTER para agendar TODOS na fila sem colisões")
         print("===================================================")
 
         escolha = input("Sua escolha: ").strip()
@@ -318,29 +347,83 @@ def main() -> None:
         print("Nenhum corte selecionado.")
         sys.exit(0)
 
-    # Conecta à API do YouTube
-    youtube = obter_servico_youtube()
-
     offset_dias = 1 if args.amanha else 0
     agendar = not args.imediato and not args.privado
+
+    # 3. Planeja a agenda sem colisões
+    if agendar:
+        plano = agendador.planejar_agenda(
+            tarefas_manifesto=tarefas,
+            tarefas_selecionadas=selecionadas,
+            por_dia=args.por_dia,
+            slots_custom=args.slots,
+            offset_dias=offset_dias,
+            intervalo_min_minutos=args.intervalo_min,
+            intercalar=not args.sem_intercalar,
+        )
+        if args.limite and args.limite > 0:
+            plano = plano[:args.limite]
+
+        agendador.imprimir_plano_agenda(
+            plano,
+            titulo=f"CALENDÁRIO PLANEJADO ({len(grade)}/DIA: {', '.join(grade)} | MÍN. {args.intervalo_min}m)",
+        )
+    else:
+        itens_envio = selecionadas[:args.limite] if (args.limite and args.limite > 0) else selecionadas
+        plano = [(t, None, None) for t in itens_envio]
+
+    if args.simular:
+        print("🧪 Modo --simular ativo: nenhum upload foi realizado e o manifesto não foi alterado.")
+        sys.exit(0)
+
+    if not args.todos and not args.ids:
+        confirma = input(f"Confirmar o envio de {len(plano)} corte(s) acima para o YouTube? [S/n]: ").strip().lower()
+        if confirma not in ["", "s", "sim"]:
+            print("Operação cancelada.")
+            sys.exit(0)
+
+    # 4. Conecta à API do YouTube e executa os envios
+    youtube = obter_servico_youtube()
     publicados_com_sucesso = 0
 
-    print(f"\n🚀 Iniciando upload de {len(selecionadas)} corte(s)...\n")
+    print(f"\n🚀 Iniciando upload de {len(plano)} corte(s)...\n")
 
-    for tarefa in selecionadas:
-        video_id = fazer_upload_corte(
-            youtube,
-            tarefa,
-            agendar=agendar,
-            privado=args.privado,
-            offset_dias=offset_dias
-        )
+    for tarefa, dt_brt, iso_utc in plano:
+        try:
+            video_id = fazer_upload_corte(
+                youtube,
+                tarefa,
+                agendar=agendar,
+                privado=args.privado,
+                dt_brt=dt_brt,
+                iso_utc=iso_utc,
+            )
+        except googleapiclient.errors.HttpError as e:
+            erro_str = str(e)
+            if "quotaExceeded" in erro_str or "uploadLimitExceeded" in erro_str:
+                print("\n⚠️ LIMITE DIÁRIO DA API DO YOUTUBE ATINGIDO!")
+                print(
+                    f"-> {publicados_com_sucesso} corte(s) já foram salvos e agendados com sucesso."
+                )
+                print(
+                    "-> Os cortes restantes continuam como 'renderizado' no manifesto e serão "
+                    "agendados a partir do próximo slot livre quando você rodar novamente amanhã."
+                )
+                break
+            print(f"❌ Erro HTTP da API do YouTube em [{tarefa['id']}]: {e}")
+            continue
+        except Exception as e:
+            print(f"❌ Erro inesperado ao enviar [{tarefa['id']}]: {e}")
+            continue
 
         if video_id:
             tarefa["status"] = manifesto.STATUS_PUBLICADO
             tarefa["youtube_video_id"] = video_id
             tarefa["youtube_url"] = f"https://youtube.com/shorts/{video_id}"
             tarefa["publicado_em"] = manifesto.agora_iso()
+            if agendar and dt_brt and iso_utc:
+                tarefa["agendado_para_brt"] = dt_brt.strftime("%Y-%m-%d %H:%M")
+                tarefa["agendado_para_utc"] = iso_utc
             manifesto.salvar(tarefas)
             publicados_com_sucesso += 1
 
@@ -349,7 +432,7 @@ def main() -> None:
 
     print("===================================================")
     print(f"🏁 Processo finalizado! {publicados_com_sucesso} vídeo(s) enviado(s) ao YouTube.")
-    print(f"📦 Manifesto atualizado com status 'publicado'.")
+    print("📦 Manifesto atualizado com status 'publicado' e horários sem colisão.")
     print("===================================================")
 
 

@@ -182,16 +182,20 @@ Os arquivos prontos são salvos na pasta `cortes_prontos/`.
 
 ---
 
-### Etapa 5: Publicação e Agendamento no YouTube (`publicar_youtube.py`)
+### Etapa 5: Publicação e Agendamento Anti-Canibalização no YouTube (`publicar_youtube.py` + `agendador.py`)
 
-Faz o upload oficial dos cortes renderizados no YouTube Shorts e agenda na grade diária:
+Distribui os cortes renderizados em uma fila de slots livres ao longo dos dias (evitando que múltiplos Shorts caiam no mesmo horário), intercalando vídeos de origens diferentes no mesmo dia e respeitando um espaçamento mínimo de 2h entre publicações:
 
 ```powershell
-python publicar_youtube.py --todos      # posta todos os renderizados agendados na grade (11:30, 17:30, 20:30)
-python publicar_youtube.py              # modo interativo (escolhe quais postar)
-python publicar_youtube.py --imediato   # publica imediatamente como público (sem agendamento)
-python publicar_youtube.py --privado    # sobe como privado para revisão manual no YouTube Studio
-python publicar_youtube.py --amanha     # agenda toda a grade para o dia seguinte
+python publicar_youtube.py --simular                      # visualiza a grade antes de subir qualquer vídeo
+python publicar_youtube.py --agenda                       # lista todos os vídeos futuros já programados
+python publicar_youtube.py --todos --por-dia 3 --limite 6 # sobe até 6 cortes (cota diária), distribuindo 3/dia sem colisões
+python publicar_youtube.py --todos --por-dia 5            # modo alto volume: 5 slots/dia (09:00, 12:00, 15:30, 18:30, 21:30)
+python publicar_youtube.py --slots "09:00,13:00,18:00"    # define horários customizados em BRT
+python publicar_youtube.py                                # modo interativo (escolhe quais postar)
+python publicar_youtube.py --imediato                     # publica imediatamente como público (sem agendamento)
+python publicar_youtube.py --privado                      # sobe como privado para revisão manual no YouTube Studio
+python publicar_youtube.py --amanha                       # inicia o preenchimento da grade a partir de amanhã
 ```
 
 ---

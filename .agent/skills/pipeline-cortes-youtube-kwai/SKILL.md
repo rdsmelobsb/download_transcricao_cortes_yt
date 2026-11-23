@@ -91,15 +91,18 @@ Selecionar o modo adequado ao vídeo:
 * **Modo `4` (`vertical_com_blur`):** Combina Modo `1` + filtros `delogo` do Modo `3`. Ideal para vídeos reaproveitados com marcas d'água centrais/inferiores.
 * **Modo `5` (`vertical_tela_cheia`):** Crop 9:16 puro em tela cheia (1080x1920) sem barras pretas. Ideal para falas solo centralizadas.
 
-### Etapa 5: Publicação e Agendamento Automático no YouTube (`publicar_youtube.py`)
+### Etapa 5: Publicação e Agendamento Automático no YouTube (`publicar_youtube.py` + `agendador.py`)
 
 * **Autenticação:** Lê `client_secrets.json` na primeira execução e salva a sessão em `token.json`.
-* **Interativo:** `python publicar_youtube.py` (lista os vídeos `renderizado`, permitindo escolher quais postar ou apertar ENTER para postar todos).
-* **Automático em lote (agendado):** `python publicar_youtube.py --todos` (faz upload de todos os cortes renderizados e agenda nos horários correspondentes da grade diária: `11:30`, `17:30`, `20:30`).
-* **Opções adicionais:** `--privado` (sobe sem data de agendamento), `--imediato` (torna público na hora) e `--amanha` (força a grade para o dia seguinte).
-* **Atualização de Estado:** Após o upload com sucesso, atualiza o corte no manifesto para `status: "publicado"`, preenche `youtube_video_id` e link `youtube_url`.
+* **Agendador Anti-Canibalização (`agendador.py`):** Lê todos os slots já ocupados (`agendado_para_brt` / `agendado_para_utc`) no manifesto, garante espaçamento mínimo de **120 minutos (2h)** entre quaisquer dois Shorts, intercala vídeos de origens diferentes (Round-Robin / rotação por faixa) para não repetir tema no mesmo dia e faz transbordo automático do estoque para os dias seguintes.
+* **Comandos:**
+  * `python publicar_youtube.py --simular` (exibe o calendário completo antes de subir qualquer vídeo)
+  * `python publicar_youtube.py --agenda` (mostra os cortes futuros já programados)
+  * `python publicar_youtube.py --todos --por-dia 3 --limite 6` (sobe até 6 cortes respeitando a cota diária, distribuindo 3/dia sem colisões)
+  * `python publicar_youtube.py --todos --por-dia 5` (modo alto volume: 5 slots/dia — `09:00`, `12:00`, `15:30`, `18:30`, `21:30`; aceita de 1 a 6 ou `--slots "09:00,13:00,18:00"`)
+* **Opções adicionais:** `--privado`, `--imediato`, `--amanha`, `--intervalo-min N`, `--sem-intercalar`.
+* **Atualização de Estado:** Após cada upload, grava `status: "publicado"`, `youtube_video_id`, `youtube_url`, `agendado_para_brt` e `agendado_para_utc` no manifesto. Se atingir `quotaExceeded`, encerra graciosamente preservando os demais cortes como `renderizado` para o dia seguinte.
 * **Cota da API do YouTube:** Cada upload consome 1.600 unidades da cota diária (10.000 unidades). Limite máximo gratuito: **6 vídeos por dia**.
-* **Regra de Agendamento:** Horários sugeridos (`11:30`, `17:30`, `20:30` - Brasília UTC-3) são convertidos para UTC (+3h) para o campo `publishAt`. Se o horário de hoje já passou, o agendamento vai automaticamente para o dia seguinte.
 
 ### Etapa 6: Publicação Automatizada no Kwai via Android (`publicar_kwai.py`)
 
