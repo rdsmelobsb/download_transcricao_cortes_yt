@@ -362,16 +362,25 @@ def publicar_no_app_kwai(
         device,
         resource_id="com.kwai.video.ca_product:id/v_cut_next",
         textos=["Próximo", "Avançar"],
-        timeout=12.0,
+        timeout=20.0,
     ):
-        print("✂️  Tela de corte confirmada ('Próximo').")
-        time.sleep(4)
+        print("✂️  Tela de corte confirmada ('Próximo'). Aguardando processamento do vídeo...")
+        time.sleep(3)
+
+        # Aguarda o 'Processando...' terminar (essencial no BlueStacks/emuladores)
+        fim_proc = time.time() + 90.0
+        while time.time() < fim_proc:
+            if device(resourceId="com.kwai.video.basis:id/tv_loading").exists or device(textContains="Processando").exists:
+                time.sleep(2.0)
+            else:
+                break
+        time.sleep(2)
 
     # 5. Remove música de fundo automática caso o Kwai tenha anexado na tela de edição
     if clicar_por_id_ou_texto(
         device,
         resource_id="com.kwai.video.basis_extension:id/music_close_view",
-        timeout=2.5,
+        timeout=3.5,
     ):
         print("🔇 Música automática removida para preservar o áudio original.")
         time.sleep(1)
@@ -381,7 +390,7 @@ def publicar_no_app_kwai(
         device,
         resource_id="com.kwai.video.ca_product:id/edit_next_button",
         textos=["Próximo", "Avançar"],
-        timeout=10.0,
+        timeout=45.0,
     ):
         print("⚠️ Botão 'Próximo' não encontrado na tela de edição.")
         return False, destino_remoto
@@ -389,7 +398,7 @@ def publicar_no_app_kwai(
 
     # 7. Aguarda a tela de publicação carregar e cola a legenda (Ctrl+V / KEYCODE_PASTE)
     campo_texto = None
-    fim_espera = time.time() + 20.0
+    fim_espera = time.time() + 45.0
     while time.time() < fim_espera:
         for seletor in (
             device(resourceId="com.kwai.video.basis:id/editor"),
@@ -409,10 +418,18 @@ def publicar_no_app_kwai(
         device.shell("input keyevent 279")  # KEYCODE_PASTE
         time.sleep(1.5)
 
-        texto_atual = (campo_texto.get_text() or "").strip()
-        if not texto_atual or "Descreva sua publicação" in texto_atual:
-            campo_texto.set_text(legenda)
-            time.sleep(1)
+        try:
+            editor_real = device(resourceId="com.kwai.video.basis:id/editor")
+            if editor_real.exists:
+                texto_atual = (editor_real.get_text() or "").strip()
+            else:
+                texto_atual = (campo_texto.get_text() or "").strip()
+            if not texto_atual or "Descreva sua publicação" in texto_atual:
+                (editor_real if editor_real.exists else campo_texto).set_text(legenda)
+                time.sleep(1)
+        except Exception:
+            # Se o seletor por placeholder sumiu após o Ctrl+V, significa que a legenda foi colada!
+            pass
 
         print("✍️ Legenda e hashtags coladas na tela de publicação do Kwai!")
         device.press("back")  # Recolhe o teclado para liberar o botão Publicar
@@ -482,6 +499,12 @@ def main() -> None:
         "--serial",
         help="Serial específico do dispositivo ADB (opcional).",
     )
+    parser.add_argument(
+        "-y",
+        "--sim",
+        action="store_true",
+        help="Confirma automaticamente o envio sem pedir input no terminal.",
+    )
 
     args = parser.parse_args()
     device, serial = conectar_dispositivo(args.serial)
@@ -518,11 +541,11 @@ def main() -> None:
         print(f"    📌 {t['title']}")
         print(f"    🖼️  {t.get('titulo_capa', '')}")
     print("===================================================")
-    confirma = input(f"Deseja iniciar o envio dos TOP {len(selecionadas)} cortes no celular? [S/n]: ").strip().lower()
-
-    if confirma not in ["", "s", "sim"]:
-        print("Operação cancelada.")
-        sys.exit(0)
+    if not args.sim:
+        confirma = input(f"Deseja iniciar o envio dos TOP {len(selecionadas)} cortes no celular? [S/n]: ").strip().lower()
+        if confirma not in ["", "s", "sim"]:
+            print("Operação cancelada.")
+            sys.exit(0)
 
     postados = 0
     for idx, tarefa in enumerate(selecionadas, start=1):
