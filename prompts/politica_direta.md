@@ -24,10 +24,10 @@ Retorne APENAS um array JSON válido onde cada objeto contenha exatamente as cha
 - `"ordem"`: Inteiro (1, 2 ou 3) correspondente à posição na grade diária.
 - `"horario_sugerido"`: String (`"11:30"`, `"17:30"` ou `"20:30"`).
 - `"nome"`: Título curto sem acentos, sem cedilha e sem caracteres especiais para nome de arquivo (ex: `"Titulo Curto Sem Acentos"`).
-- `"title"`: Título otimizado para SEO e retenção no YouTube Shorts e Kwai (com acentuação normal em PT-BR).
+- `"title"`: Título otimizado para SEO e CTR (ideal até **65 caracteres**, máximo 90, com acentuação normal em PT-BR). Traga o sujeito ou dado concreto (cifra, nome, lei) já nos primeiros 40 caracteres e use no máximo 1–2 palavras em caixa alta.
 - `"start"`: Número float em segundos exatos do início do corte (ex: `120.500`).
 - `"end"`: Número float em segundos exatos do fim do corte (ex: `195.240`).
-- `"titulo_capa"`: Frase curta para Título na tela / Capa com selo de impacto em caixa alta no início (ex: `"RECADO DIRETO: '...'"`, `"UTILIDADE PÚBLICA: '...'"`, `"ALERTA URGENTE: '...'"`) pensada para segurar o scroll.
+- `"titulo_capa"`: Frase curta para Título na tela / Capa com selo de impacto em caixa alta no início (ex: `"RECADO DIRETO: '...'"`, `"UTILIDADE PÚBLICA: '...'"`, `"ALERTA URGENTE: '...'"`). **REGRA DE OURO DE CTR (COMPLEMENTARIDADE):** a frase da capa deve ter no máximo **6 palavras** e **NÃO pode repetir as mesmas palavras do `title`** — o título dá o contexto/fato e a capa entrega o golpe emocional ou a cifra de impacto.
 - `"texto_publicacao"`: Texto completo da publicação estruturado em 4 partes curtas (separadas por quebra de linha `\n\n`): (1) contextualização rápida em uma frase, (2) citação limpa e fluente dos melhores trechos da fala, (3) fecho analítico reforçando o impacto prático e (4) CTA direto incentivando comentários (algoritmo do YouTube) e compartilhamento em grupos (alcance no Kwai).
 - `"hashtags"`: Array ou string com exatamente 5 hashtags, sempre começando com `#PolíticaDireta` seguida por 4 tags específicas de alto volume do tema.
 

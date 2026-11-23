@@ -18,6 +18,7 @@ with warnings.catch_warnings():
 # =====================================================================
 
 import manifesto
+import validador_packaging
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMP_DIR = BASE_DIR / "temp"
@@ -250,6 +251,7 @@ def analisar_srt_com_gemini(
             "hashtags": normalizar_hashtags(item.get("hashtags")),
         })
 
+    validador_packaging.imprimir_relatorio_lote(cortes_normalizados)
     return cortes_normalizados
 
 
