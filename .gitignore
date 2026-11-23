@@ -19,5 +19,6 @@ token.json
 temp/
 cortes_prontos/
 scratch/
+logs/
 *.mp4
 *.srt
