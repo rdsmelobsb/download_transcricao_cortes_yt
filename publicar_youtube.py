@@ -301,11 +301,15 @@ def main() -> None:
         print(f"❌ Configuração de grade inválida: {e}")
         sys.exit(1)
 
-    # 2. Filtra tarefas prontas para publicação (com arquivo existente)
-    renderizadas = [
+    # 2. Filtra tarefas prontas para publicação (ignorando 'renderizado' cujo .mp4 já foi removido)
+    todas_renderizadas = [
         t for t in tarefas
         if t.get("status") == manifesto.STATUS_RENDERIZADO
     ]
+    renderizadas = [t for t in todas_renderizadas if localizar_arquivo_video(t) is not None]
+    fantasmas = len(todas_renderizadas) - len(renderizadas)
+    if fantasmas > 0:
+        print(f"ℹ️  Ignorando {fantasmas} corte(s) com status 'renderizado' cujo arquivo .mp4 não existe mais em cortes_prontos/.")
 
     if not renderizadas:
         print("⚠️ Nenhum corte com status 'renderizado' encontrado no manifesto!")

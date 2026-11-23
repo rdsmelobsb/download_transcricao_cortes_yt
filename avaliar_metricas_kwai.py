@@ -154,14 +154,33 @@ def abrir_perfil_kwai(device) -> None:
 
     # Clica na aba 'Perfil' caso não esteja vendo os thumbs do perfil
     if not device(resourceId="com.kwai.video.basis_extension:id/thumb").exists:
-        for _ in range(5):
+        encontrou_perfil = False
+        for _ in range(4):
             aba_perfil = device(resourceId="com.kwai.video.basis:id/consume_tab_text", text="Perfil")
             if aba_perfil.exists:
                 aba_perfil.click()
                 time.sleep(2.5)
+                encontrou_perfil = True
                 break
             device.press("back")
             time.sleep(1.2)
+
+        # Se estava preso em tela de edição/descarte, reinicia o app limpo e vai ao Perfil
+        if not encontrou_perfil:
+            device.app_stop(KWAI_PACKAGE)
+            time.sleep(1.5)
+            device.app_start(KWAI_PACKAGE)
+            time.sleep(5.5)
+            for skip_txt in ("Pular", "Skip", "Fechar"):
+                el = device(textContains=skip_txt)
+                if el.exists:
+                    el.click()
+                    time.sleep(1.5)
+                    break
+            aba_perfil = device(resourceId="com.kwai.video.basis:id/consume_tab_text", text="Perfil")
+            if aba_perfil.exists:
+                aba_perfil.click()
+                time.sleep(2.5)
 
     # Garante que estamos no topo do perfil e depois desce só o suficiente para expor a grade
     w, h = device.window_size()
