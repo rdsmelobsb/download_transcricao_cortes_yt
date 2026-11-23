@@ -1,0 +1,364 @@
+{
+  "atualizado_em": "2026-11-22T22:55:25",
+  "total_auditados": 33,
+  "total_views": 23994,
+  "media_views": 727.1,
+  "total_likes": 883,
+  "total_comments": 18,
+  "total_shares": 0,
+  "melhor_faixa_duracao": "60s a 75s",
+  "melhores_selos": [
+    "CONTRASTE POLÍTICO",
+    "MOMENTO HISTÓRICO",
+    "SOBERANIA"
+  ],
+  "ranking_duracao": [
+    {
+      "faixa": "60s a 75s",
+      "media_views": 873.9,
+      "total_views": 7865,
+      "total_likes": 338,
+      "qtd": 9
+    },
+    {
+      "faixa": "75s a 90s",
+      "media_views": 732.3,
+      "total_views": 4394,
+      "total_likes": 172,
+      "qtd": 6
+    },
+    {
+      "faixa": "45s a 60s",
+      "media_views": 655.8,
+      "total_views": 8525,
+      "total_likes": 274,
+      "qtd": 13
+    },
+    {
+      "faixa": "90s a 100s+",
+      "media_views": 642.0,
+      "total_views": 3210,
+      "total_likes": 99,
+      "qtd": 5
+    }
+  ],
+  "ranking_selos": [
+    {
+      "selo": "CONTRASTE POLÍTICO",
+      "media_views": 1075.0,
+      "total_views": 1075,
+      "total_likes": 53,
+      "qtd": 1
+    },
+    {
+      "selo": "MOMENTO HISTÓRICO",
+      "media_views": 1053.0,
+      "total_views": 1053,
+      "total_likes": 48,
+      "qtd": 1
+    },
+    {
+      "selo": "SOBERANIA",
+      "media_views": 1025.0,
+      "total_views": 1025,
+      "total_likes": 45,
+      "qtd": 1
+    },
+    {
+      "selo": "INVESTIGAÇÃO ABERTA",
+      "media_views": 1014.0,
+      "total_views": 1014,
+      "total_likes": 43,
+      "qtd": 1
+    },
+    {
+      "selo": "DEBATE ECONÔMICO",
+      "media_views": 908.0,
+      "total_views": 908,
+      "total_likes": 34,
+      "qtd": 1
+    },
+    {
+      "selo": "ALERTA URGENTE",
+      "media_views": 812.0,
+      "total_views": 3248,
+      "total_likes": 122,
+      "qtd": 4
+    },
+    {
+      "selo": "COBRANÇA FIRME",
+      "media_views": 797.3,
+      "total_views": 2392,
+      "total_likes": 100,
+      "qtd": 3
+    },
+    {
+      "selo": "UTILIDADE PÚBLICA",
+      "media_views": 747.8,
+      "total_views": 4487,
+      "total_likes": 176,
+      "qtd": 6
+    },
+    {
+      "selo": "PARA TODO O BRASIL",
+      "media_views": 687.5,
+      "total_views": 1375,
+      "total_likes": 47,
+      "qtd": 2
+    },
+    {
+      "selo": "HISTÓRIA VIVA",
+      "media_views": 645.5,
+      "total_views": 1291,
+      "total_likes": 42,
+      "qtd": 2
+    },
+    {
+      "selo": "RECADO DIRETO",
+      "media_views": 642.0,
+      "total_views": 2568,
+      "total_likes": 79,
+      "qtd": 4
+    },
+    {
+      "selo": "CONTA NÃO FECHA",
+      "media_views": 623.0,
+      "total_views": 623,
+      "total_likes": 18,
+      "qtd": 1
+    },
+    {
+      "selo": "DEBATE QUENTE",
+      "media_views": 576.0,
+      "total_views": 576,
+      "total_likes": 16,
+      "qtd": 1
+    },
+    {
+      "selo": "ECONOMIA REAL",
+      "media_views": 559.0,
+      "total_views": 1118,
+      "total_likes": 29,
+      "qtd": 2
+    },
+    {
+      "selo": "ANÁLISE DIRETA",
+      "media_views": 547.0,
+      "total_views": 547,
+      "total_likes": 13,
+      "qtd": 1
+    },
+    {
+      "selo": "CONTAS PÚBLICAS",
+      "media_views": 431.0,
+      "total_views": 431,
+      "total_likes": 8,
+      "qtd": 1
+    },
+    {
+      "selo": "RELATO COMOVENTE",
+      "media_views": 263.0,
+      "total_views": 263,
+      "total_likes": 10,
+      "qtd": 1
+    }
+  ],
+  "top_videos": [
+    {
+      "id": "gsqkYPR2OsI_3",
+      "title": "255 mil desalojados e alerta de El Niño extremo: o apelo urgente no Congresso",
+      "titulo_capa": "ALERTA URGENTE: '255 MIL DESALOJADOS E O PIOR EL NIÑO VEM AÍ'",
+      "duracao": 74.0,
+      "kwai_publicado_em": "2026-11-20T14:20:19",
+      "views": 1076,
+      "likes": 52,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 4.83,
+      "atualizado_em": "2026-11-22T22:55:22"
+    },
+    {
+      "id": "Gzegts8LXaI_2",
+      "title": "Programa eleitoral faz acusações sobre milícias, emendas e esquemas financeiros",
+      "titulo_capa": "CONTRASTE POLÍTICO: Propaganda eleitoral levanta acusações na reta final",
+      "duracao": 61.5,
+      "kwai_publicado_em": "2026-11-20T16:36:03",
+      "views": 1075,
+      "likes": 53,
+      "comments": 2,
+      "shares": 0,
+      "engajamento_pct": 5.12,
+      "atualizado_em": "2026-11-22T22:54:34"
+    },
+    {
+      "id": "2EcokGX0v6s_1",
+      "title": "Exposição gratuita Elas no Jogo chega às escolas e à internet: veja como participar!",
+      "titulo_capa": "UTILIDADE PÚBLICA: 'ESSE É UM LUGAR DE JOGO PARA ELAS'",
+      "duracao": 80.7,
+      "kwai_publicado_em": "2026-11-20T16:24:36",
+      "views": 1059,
+      "likes": 46,
+      "comments": 2,
+      "shares": 0,
+      "engajamento_pct": 4.53,
+      "atualizado_em": "2026-11-22T22:54:41"
+    },
+    {
+      "id": "fO9TK7mbYwE_3",
+      "title": "Discurso emocionante de Benedita da Silva e Paulo Paim no Congresso: 'Mandato de causas, não de casos'",
+      "titulo_capa": "MOMENTO HISTÓRICO: 'NINGUÉM VAI ME TIRAR DAS RUAS'",
+      "duracao": 67.4,
+      "kwai_publicado_em": "2026-11-21T17:12:33",
+      "views": 1053,
+      "likes": 48,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 4.65,
+      "atualizado_em": "2026-11-22T22:54:18"
+    },
+    {
+      "id": "TIVjSUMTK-k_1",
+      "title": "23.970 crianças desaparecidas em 2025: Senado abre canal 0800 gratuito e sigiloso para denúncias",
+      "titulo_capa": "UTILIDADE PÚBLICA: 'O telefone do Senado está aberto e gratuito para denúncias'",
+      "duracao": 85.0,
+      "kwai_publicado_em": "2026-11-20T15:03:36",
+      "views": 1047,
+      "likes": 48,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 4.68,
+      "atualizado_em": "2026-11-22T22:55:06"
+    },
+    {
+      "id": "CSPfVyuG1sI_3",
+      "title": "RECADO AO MUNDO: 'Nenhum país tem mais autoridade que o Brasil se tratando do clima'",
+      "titulo_capa": "SOBERANIA: 'O Brasil não caiu no quintal de ninguém!'",
+      "duracao": 63.0,
+      "kwai_publicado_em": "2026-11-20T16:28:00",
+      "views": 1025,
+      "likes": 45,
+      "comments": 2,
+      "shares": 0,
+      "engajamento_pct": 4.59,
+      "atualizado_em": "2026-11-22T22:54:39"
+    },
+    {
+      "id": "TO3oHDGPbh0_2",
+      "title": "Caso Edson Davi: Polícia Civil Explica Tese de Afogamento e Senado Garante que Caso Segue Aberto",
+      "titulo_capa": "INVESTIGAÇÃO ABERTA: 'A MÃE NÃO ACEITA E O CASO NÃO FOI ENCERRADO'",
+      "duracao": 89.1,
+      "kwai_publicado_em": "2026-11-20T16:44:16",
+      "views": 1014,
+      "likes": 43,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 4.34,
+      "atualizado_em": "2026-11-22T22:54:30"
+    },
+    {
+      "id": "XqZZOSWr8EA_2",
+      "title": "Ajuste fiscal e teto salarial do serviço público avançam no Senado e vão à Câmara",
+      "titulo_capa": "COBRANÇA FIRME: 'Teto salarial do serviço público e ajuste fiscal na pauta da Câmara'",
+      "duracao": 49.8,
+      "kwai_publicado_em": "2026-11-22T10:01:37",
+      "views": 1005,
+      "likes": 47,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 4.78,
+      "atualizado_em": "2026-11-22T22:54:07"
+    },
+    {
+      "id": "1O0xO3wNwVY_2",
+      "title": "Pietá faz recado firme no Rio sobre ocupar espaços políticos e fortalecer a luta social",
+      "titulo_capa": "COBRANÇA FIRME: 'É preciso ocupar os espaços políticos agora'",
+      "duracao": 62.0,
+      "kwai_publicado_em": "2026-11-22T09:59:41",
+      "views": 1005,
+      "likes": 47,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 4.78,
+      "atualizado_em": "2026-11-22T22:54:10"
+    },
+    {
+      "id": "jYFwbYTu8E4_1",
+      "title": "Universidade Federal do Esporte já tem data para abrir e prevê mais de 3 mil alunos",
+      "titulo_capa": "UTILIDADE PÚBLICA: 'Mais de 3 mil alunos a partir de 2027'",
+      "duracao": 64.0,
+      "kwai_publicado_em": "2026-11-20T14:47:44",
+      "views": 956,
+      "likes": 39,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 4.18,
+      "atualizado_em": "2026-11-22T22:55:16"
+    },
+    {
+      "id": "Gzegts8LXaI_1",
+      "title": "Campanha de Lula cita cortes de R$ 250 bi, escala 6x1 e Petrobras no programa eleitoral",
+      "titulo_capa": "DEBATE ECONÔMICO: Campanha aborda direitos, escala 6x1 e Petrobras",
+      "duracao": 47.4,
+      "kwai_publicado_em": "2026-11-20T16:10:31",
+      "views": 908,
+      "likes": 34,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.74,
+      "atualizado_em": "2026-11-22T22:54:50"
+    },
+    {
+      "id": "1O0xO3wNwVY_1",
+      "title": "A importância da TV pública para democratizar a cultura e o ensino no Brasil",
+      "titulo_capa": "PARA TODO O BRASIL: 'TV pública garante acesso à cultura e ao ensino'",
+      "duracao": 55.0,
+      "kwai_publicado_em": "2026-11-22T09:54:07",
+      "views": 906,
+      "likes": 37,
+      "comments": 2,
+      "shares": 0,
+      "engajamento_pct": 4.3,
+      "atualizado_em": "2026-11-22T22:54:15"
+    },
+    {
+      "id": "3864e01e_3",
+      "title": "Lula cita origem operária para defender diálogo de igual para igual com líderes mundiais",
+      "titulo_capa": "HISTÓRIA VIVA: 'O povo brasileiro não é inferior a ninguém'",
+      "duracao": 96.0,
+      "kwai_publicado_em": "2026-11-21T17:11:43",
+      "views": 839,
+      "likes": 33,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.93,
+      "atualizado_em": "2026-11-22T22:54:20"
+    },
+    {
+      "id": "fO9TK7mbYwE_1",
+      "title": "Dado chocante sobre mortalidade em Florianópolis revela por que lei de saúde no SUS é urgente",
+      "titulo_capa": "ALERTA URGENTE: 'MORRE 3X MAIS QUE A POPULAÇÃO BRANCA'",
+      "duracao": 50.0,
+      "kwai_publicado_em": "2026-11-21T17:03:06",
+      "views": 835,
+      "likes": 30,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.59,
+      "atualizado_em": "2026-11-22T22:54:27"
+    },
+    {
+      "id": "91kIna3CvP4_3",
+      "title": "Lula agradece 4º mandato, fala em soberania e critica Big Techs nas eleições",
+      "titulo_capa": "RECADO DIRETO: Lula critica Big Techs e diz que 'o Brasil não cabe no quintal de ninguém'",
+      "duracao": 94.9,
+      "kwai_publicado_em": "2026-11-20T16:20:53",
+      "views": 788,
+      "likes": 28,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.55,
+      "atualizado_em": "2026-11-22T22:54:45"
+    }
+  ],
+  "diretriz_retroalimentacao": "### 📊 INTELIGÊNCIA DE AUDIÊNCIA NO KWAI (DADOS REAIS DE 33 CORTES):\n- Média atual do canal no Kwai: **727.1 views/vídeo** (23994 views totais, 883 curtidas).\n- Faixa de duração com maior retenção no Kwai: **60s a 75s**.\n- Selos de capa com maior tração: **CONTRASTE POLÍTICO, MOMENTO HISTÓRICO, SOBERANIA**.\n- Top cortes campeões de audiência no Kwai:\n  * \"255 mil desalojados e alerta de El Niño extremo: o apelo urgente no Congresso\" (1076 views, 52 likes, 74.0s, selo: ALERTA URGENTE)\n  * \"Programa eleitoral faz acusações sobre milícias, emendas e esquemas financeiros\" (1075 views, 53 likes, 61.5s, selo: CONTRASTE POLÍTICO)\n  * \"Exposição gratuita Elas no Jogo chega às escolas e à internet: veja como participar!\" (1059 views, 46 likes, 80.7s, selo: UTILIDADE PÚBLICA)\n  * \"Discurso emocionante de Benedita da Silva e Paulo Paim no Congresso: 'Mandato de causas, não de casos'\" (1053 views, 48 likes, 67.4s, selo: MOMENTO HISTÓRICO)\n  * \"23.970 crianças desaparecidas em 2025: Senado abre canal 0800 gratuito e sigiloso para denúncias\" (1047 views, 48 likes, 85.0s, selo: UTILIDADE PÚBLICA)"
+}

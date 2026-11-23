@@ -24,6 +24,7 @@ TEMP_DIR = BASE_DIR / "temp"
 OUTPUT_DIR = BASE_DIR / "cortes_prontos"
 PROMPT_FILE = BASE_DIR / "prompts" / "politica_direta.md"
 PADROES_VENCEDORES_FILE = BASE_DIR / "prompts" / "padroes_vencedores.json"
+PADROES_VENCEDORES_KWAI_FILE = BASE_DIR / "prompts" / "padroes_vencedores_kwai.json"
 KIT_PUBLICACAO_MD_FILE = OUTPUT_DIR / "kit_publicacao.md"
 HISTORICO_SRT_FILE = BASE_DIR / "historico_srt_analisados.txt"
 ENV_FILE = BASE_DIR / ".env"
@@ -134,19 +135,30 @@ def configurar_api_gemini() -> None:
 
 def carregar_diretriz_padroes_vencedores() -> str:
     """
-    Lê prompts/padroes_vencedores.json gerado pelo avaliar_metricas.py
-    e retorna o bloco de inteligência editorial para retroalimentar a IA.
+    Lê prompts/padroes_vencedores.json (YouTube) e prompts/padroes_vencedores_kwai.json (Kwai)
+    e retorna o bloco unificado de inteligência editorial para retroalimentar a IA.
     """
-    if not PADROES_VENCEDORES_FILE.exists():
-        return ""
-    try:
-        dados = json.loads(PADROES_VENCEDORES_FILE.read_text(encoding="utf-8"))
-        diretriz = dados.get("diretriz_retroalimentacao", "").strip()
-        if diretriz and dados.get("total_publicos", 0) > 0:
-            return f"\n{diretriz}\n"
-    except Exception as e:
-        print(f"⚠️ Aviso ao carregar padrões vencedores: {e}")
-    return ""
+    blocos: list[str] = []
+
+    if PADROES_VENCEDORES_KWAI_FILE.exists():
+        try:
+            dados_kwai = json.loads(PADROES_VENCEDORES_KWAI_FILE.read_text(encoding="utf-8"))
+            diretriz_kwai = dados_kwai.get("diretriz_retroalimentacao", "").strip()
+            if diretriz_kwai and dados_kwai.get("total_auditados", 0) > 0:
+                blocos.append(diretriz_kwai)
+        except Exception as e:
+            print(f"⚠️ Aviso ao carregar padrões vencedores do Kwai: {e}")
+
+    if PADROES_VENCEDORES_FILE.exists():
+        try:
+            dados = json.loads(PADROES_VENCEDORES_FILE.read_text(encoding="utf-8"))
+            diretriz = dados.get("diretriz_retroalimentacao", "").strip()
+            if diretriz and dados.get("total_publicos", 0) > 0:
+                blocos.append(diretriz)
+        except Exception as e:
+            print(f"⚠️ Aviso ao carregar padrões vencedores do YouTube: {e}")
+
+    return ("\n\n" + "\n\n".join(blocos) + "\n") if blocos else ""
 
 
 def carregar_prompt(video_filename: str, max_cortes: int, srt_anotado: str) -> str:
