@@ -107,10 +107,57 @@ def selecionar_melhores_cortes(
 # 3. CONEXÃO ANDROID (ADB + UIAUTOMATOR2) E TRANSFERÊNCIA DE VÍDEO
 # =====================================================================
 
+BLUESTACKS_PORTAS_FALLBACK = ["127.0.0.1:6610", "127.0.0.1:5555"]
+
+
+def _descobrir_enderecos_emulador() -> list[str]:
+    """Lê portas ADB do bluestacks.conf (se existir) e combina com os fallbacks."""
+    enderecos: list[str] = []
+    for conf_path in (
+        Path(r"C:\ProgramData\BlueStacks_nxt\bluestacks.conf"),
+        Path(r"C:\ProgramData\BlueStacks\bluestacks.conf"),
+    ):
+        if conf_path.exists():
+            try:
+                texto = conf_path.read_text(encoding="utf-8", errors="ignore")
+                for porta in re.findall(r'adb_port="(\d+)"', texto):
+                    addr = f"127.0.0.1:{porta}"
+                    if addr not in enderecos:
+                        enderecos.append(addr)
+            except OSError:
+                pass
+    for addr in BLUESTACKS_PORTAS_FALLBACK:
+        if addr not in enderecos:
+            enderecos.append(addr)
+    return enderecos
+
+
 def conectar_dispositivo(serial: Optional[str] = None):
-    """Conecta ao primeiro dispositivo Android autorizado via ADB."""
+    """
+    Conecta ao dispositivo Android autorizado via ADB (USB ou emulador TCP como BlueStacks).
+    Se nenhum aparelho USB estiver conectado, tenta reconectar automaticamente nas portas
+    do BlueStacks.
+    """
+    if serial and ":" in serial:
+        try:
+            adbutils.adb.connect(serial, timeout=5.0)
+        except Exception:
+            pass
+
     dispositivos = adbutils.adb.list()
     autorizados = [d for d in dispositivos if d.state == "device"]
+
+    if not autorizados and not serial:
+        for addr in _descobrir_enderecos_emulador():
+            try:
+                resp = adbutils.adb.connect(addr, timeout=3.0)
+                if "connected" in (resp or "").lower():
+                    print(f"🔌 Emulador ADB detectado automaticamente em {addr}")
+                    break
+            except Exception:
+                continue
+        dispositivos = adbutils.adb.list()
+        autorizados = [d for d in dispositivos if d.state == "device"]
 
     if not autorizados:
         if dispositivos:
@@ -120,7 +167,7 @@ def conectar_dispositivo(serial: Optional[str] = None):
             print("-> Desbloqueie o celular e toque em 'Permitir depuração USB'.")
         else:
             print("❌ Nenhum dispositivo Android conectado via ADB.")
-            print("-> Conecte o celular via cabo USB (ou abra o emulador com ADB ativado).")
+            print("-> Conecte o celular via cabo USB (ou abra o BlueStacks com ADB ativado).")
         sys.exit(1)
 
     alvo = serial or autorizados[0].serial
