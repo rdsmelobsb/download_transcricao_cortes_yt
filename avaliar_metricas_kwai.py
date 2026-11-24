@@ -127,6 +127,11 @@ def extrair_metricas_tela_player(xml: str) -> dict[str, Any]:
     }
 
 
+def _swipe_adb(device, x1: int, y1: int, x2: int, y2: int, duration_ms: int = 320) -> None:
+    """Executa swipe via 'adb shell input swipe' (mais confiável que u2.swipe no BlueStacks)."""
+    device.shell(f"input swipe {int(x1)} {int(y1)} {int(x2)} {int(y2)} {int(duration_ms)}")
+
+
 def abrir_perfil_kwai(device) -> None:
     """Garante que o app Kwai está em primeiro plano e posicionado na aba 'Perfil'."""
     atual = device.app_current()
@@ -156,7 +161,9 @@ def abrir_perfil_kwai(device) -> None:
     if not device(resourceId="com.kwai.video.basis_extension:id/thumb").exists:
         encontrou_perfil = False
         for _ in range(4):
-            aba_perfil = device(resourceId="com.kwai.video.basis:id/consume_tab_text", text="Perfil")
+            aba_perfil = device(resourceId="com.kwai.video.basis:id/id_home_bottom_tab_me")
+            if not aba_perfil.exists:
+                aba_perfil = device(resourceId="com.kwai.video.basis:id/consume_tab_text", text="Perfil")
             if aba_perfil.exists:
                 aba_perfil.click()
                 time.sleep(2.5)
@@ -170,23 +177,26 @@ def abrir_perfil_kwai(device) -> None:
             device.app_stop(KWAI_PACKAGE)
             time.sleep(1.5)
             device.app_start(KWAI_PACKAGE)
-            time.sleep(5.5)
+            time.sleep(6.5)
             for skip_txt in ("Pular", "Skip", "Fechar"):
                 el = device(textContains=skip_txt)
                 if el.exists:
                     el.click()
                     time.sleep(1.5)
                     break
-            aba_perfil = device(resourceId="com.kwai.video.basis:id/consume_tab_text", text="Perfil")
+            aba_perfil = device(resourceId="com.kwai.video.basis:id/id_home_bottom_tab_me")
+            if not aba_perfil.exists:
+                aba_perfil = device(resourceId="com.kwai.video.basis:id/consume_tab_text", text="Perfil")
             if aba_perfil.exists:
                 aba_perfil.click()
                 time.sleep(2.5)
 
     # Garante que estamos no topo do perfil e depois desce só o suficiente para expor a grade
+    # Usa 0.62*h como origem do swipe para nunca acertar a barra inferior (ex: y=934 em BlueStacks 720x1280)
     w, h = device.window_size()
-    device.swipe(int(w * 0.5), int(h * 0.30), int(w * 0.5), int(h * 0.85), duration=0.3)
+    _swipe_adb(device, int(w * 0.5), int(h * 0.28), int(w * 0.5), int(h * 0.65), duration_ms=300)
     time.sleep(1.0)
-    device.swipe(int(w * 0.5), int(h * 0.78), int(w * 0.5), int(h * 0.28), duration=0.35)
+    _swipe_adb(device, int(w * 0.5), int(h * 0.62), int(w * 0.5), int(h * 0.20), duration_ms=350)
     time.sleep(1.2)
 
 
@@ -205,15 +215,21 @@ def localizar_primeiro_video_nao_fixado(device) -> Optional[tuple[int, int]]:
 
         fixados_bounds: list[tuple[int, int, int, int]] = []
         thumbs_bounds: list[tuple[int, int, int, int]] = []
+        limite_inferior_y = int(h * 0.88)
 
         for node in root.iter("node"):
             rid = (node.attrib.get("resource-id") or "").strip()
             bounds = parsear_bounds(node.attrib.get("bounds", ""))
-            if rid == "com.kwai.video.basis_extension:id/top_label":
+            if rid == "com.kwai.video.basis:id/id_home_bottom_tab_me" and bounds[1] > 0:
+                limite_inferior_y = min(limite_inferior_y, bounds[1] - 10)
+            elif rid == "com.kwai.video.basis_extension:id/top_label":
                 fixados_bounds.append(bounds)
             elif rid == "com.kwai.video.basis_extension:id/thumb":
-                # Ignora cards cortados demais na borda inferior (< 120px altura)
-                if (bounds[3] - bounds[1]) >= 120:
+                # Exige card praticamente inteiro (altura >= 90% da largura), evitando cards
+                # fixados parcialmente rolados no topo cujo selo 'top_label' já saiu da tela
+                larg = bounds[2] - bounds[0]
+                alt = bounds[3] - bounds[1]
+                if larg >= 100 and alt >= int(larg * 0.9):
                     thumbs_bounds.append(bounds)
 
         # Ordena por linha (y1 // 50) e depois coluna (x1) -> ordem de leitura da grade
@@ -232,11 +248,11 @@ def localizar_primeiro_video_nao_fixado(device) -> Optional[tuple[int, int]]:
                 cx = (x1 + x2) // 2
                 cy = (y1 + y2) // 2
                 # Evita clicar na área do widget flutuante de moedas (topo esquerdo) ou barra inferior
-                if int(h * 0.36) <= cy <= int(h * 0.88):
+                if int(h * 0.28) <= cy <= limite_inferior_y:
                     return cx, cy
 
-        # Se só havia fixados ou cabeçalho visível, rola um pouco para baixo
-        device.swipe(int(w * 0.5), int(h * 0.78), int(w * 0.5), int(h * 0.30), duration=0.35)
+        # Se só havia fixados ou cabeçalho visível, rola um pouco para baixo (acima da barra inferior)
+        _swipe_adb(device, int(w * 0.5), int(h * 0.62), int(w * 0.5), int(h * 0.20), duration_ms=350)
         time.sleep(1.2)
 
     return None
@@ -331,7 +347,7 @@ def coletar_metricas_kwai(
         )
 
         if idx < total:
-            device.swipe(int(w * 0.5), int(h * 0.80), int(w * 0.5), int(h * 0.18), duration=0.22)
+            _swipe_adb(device, int(w * 0.5), int(h * 0.65), int(w * 0.5), int(h * 0.18), duration_ms=220)
             time.sleep(1.3)
 
     # Volta para a tela do perfil para deixar o app limpo
