@@ -368,9 +368,17 @@ def publicar_no_app_kwai(
         time.sleep(3)
 
         # Aguarda o 'Processando...' terminar (essencial no BlueStacks/emuladores)
-        fim_proc = time.time() + 90.0
+        fim_proc = time.time() + 120.0
         while time.time() < fim_proc:
-            if device(resourceId="com.kwai.video.basis:id/tv_loading").exists or device(textContains="Processando").exists:
+            try:
+                em_proc = (
+                    device(resourceId="com.kwai.video.basis:id/tv_loading").exists
+                    or device(textContains="Processando").exists
+                )
+            except Exception:
+                time.sleep(2.0)
+                continue
+            if em_proc:
                 time.sleep(2.0)
             else:
                 break
@@ -549,12 +557,19 @@ def main() -> None:
 
     postados = 0
     for idx, tarefa in enumerate(selecionadas, start=1):
-        sucesso, destino_remoto = publicar_no_app_kwai(
-            device,
-            serial,
-            tarefa,
-            apenas_preparar=args.preparar,
-        )
+        sucesso = False
+        destino_remoto = None
+        try:
+            sucesso, destino_remoto = publicar_no_app_kwai(
+                device,
+                serial,
+                tarefa,
+                apenas_preparar=args.preparar,
+            )
+        except Exception as exc:
+            print(f"⚠️ Erro de conexão/UI ao publicar [{tarefa['id']}]: {exc}")
+            sucesso = False
+
         if sucesso:
             marcar = False
             if not args.preparar:
@@ -579,6 +594,25 @@ def main() -> None:
                 intervalo = random.randint(120, 240)
                 print(f"\n☕ Aguardando {intervalo}s antes do próximo envio (proteção anti-bot)...")
                 time.sleep(intervalo)
+        else:
+            # Limpa estado do app e reconecta o uiautomator2 para não derrubar o restante do lote
+            if destino_remoto:
+                remover_video_temporario_android(serial, destino_remoto)
+            try:
+                subprocess.run(
+                    [obter_executavel_adb(), "-s", serial, "shell", "am", "force-stop", KWAI_PACKAGE],
+                    capture_output=True,
+                    timeout=10,
+                )
+            except Exception:
+                pass
+            time.sleep(4)
+            try:
+                device = u2.connect(serial)
+                print(f"🔄 Sessão ADB/UI reconectada ({serial}). Seguindo para o próximo corte...")
+            except Exception as recon_err:
+                print(f"❌ Falha ao reconectar ADB ({serial}): {recon_err}")
+                break
 
     print("===================================================")
     print(f"🏁 Finalizado! {postados} vídeo(s) publicado(s) no Kwai.")
