@@ -1,65 +1,113 @@
 {
-  "atualizado_em": "2026-11-21T15:49:22",
-  "total_auditados": 42,
-  "total_publicos": 30,
-  "total_agendados": 12,
-  "total_views": 22,
-  "total_likes": 0,
+  "atualizado_em": "2026-11-25T08:00:55",
+  "total_auditados": 73,
+  "total_publicos": 56,
+  "total_agendados": 17,
+  "total_views": 260,
+  "total_likes": 5,
   "total_comments": 0,
-  "melhor_faixa_duracao": "90s a 100s",
+  "melhor_faixa_duracao": "75s a 90s",
   "melhores_selos": [
-    "HISTÓRIA VIVA",
-    "PARA TODO O BRASIL",
-    "COBRANÇA FIRME"
+    "UTILIDADE PÚBLICA",
+    "MOMENTO HISTÓRICO",
+    "HISTÓRIA VIVA"
   ],
-  "melhor_horario": "20:30",
+  "melhor_horario": "11:30",
   "ranking_duracao": [
     {
-      "faixa": "90s a 100s",
-      "media_views": 1.2,
-      "total_views": 6,
-      "qtd": 5
+      "faixa": "75s a 90s",
+      "media_views": 13.4,
+      "total_views": 134,
+      "qtd": 10
     },
     {
       "faixa": "60s a 75s",
-      "media_views": 1.1,
-      "total_views": 10,
-      "qtd": 9
-    },
-    {
-      "faixa": "75s a 90s",
-      "media_views": 0.7,
-      "total_views": 5,
-      "qtd": 7
+      "media_views": 3.7,
+      "total_views": 71,
+      "qtd": 19
     },
     {
       "faixa": "45s a 60s",
-      "media_views": 0.1,
-      "total_views": 1,
+      "media_views": 2.2,
+      "total_views": 40,
+      "qtd": 18
+    },
+    {
+      "faixa": "90s a 100s",
+      "media_views": 1.7,
+      "total_views": 15,
       "qtd": 9
     }
   ],
   "ranking_selos": [
     {
+      "selo": "UTILIDADE PÚBLICA",
+      "media_views": 14.4,
+      "total_views": 130,
+      "qtd": 9
+    },
+    {
+      "selo": "MOMENTO HISTÓRICO",
+      "media_views": 10.0,
+      "total_views": 10,
+      "qtd": 1
+    },
+    {
       "selo": "HISTÓRIA VIVA",
+      "media_views": 9.0,
+      "total_views": 36,
+      "qtd": 4
+    },
+    {
+      "selo": "VALORIZAÇÃO NACIONAL",
       "media_views": 6.0,
       "total_views": 6,
       "qtd": 1
     },
     {
-      "selo": "PARA TODO O BRASIL",
-      "media_views": 5.0,
-      "total_views": 5,
+      "selo": "CONTA NÃO FECHA",
+      "media_views": 4.0,
+      "total_views": 4,
       "qtd": 1
+    },
+    {
+      "selo": "INVESTIGAÇÃO ABERTA",
+      "media_views": 3.5,
+      "total_views": 7,
+      "qtd": 2
+    },
+    {
+      "selo": "RECADO DIRETO",
+      "media_views": 3.3,
+      "total_views": 23,
+      "qtd": 7
     },
     {
       "selo": "COBRANÇA FIRME",
-      "media_views": 3.0,
-      "total_views": 3,
-      "qtd": 1
+      "media_views": 2.8,
+      "total_views": 14,
+      "qtd": 5
+    },
+    {
+      "selo": "COBRANÇA DIRETA",
+      "media_views": 2.3,
+      "total_views": 7,
+      "qtd": 3
     },
     {
       "selo": "CONTRASTE DIRETO",
+      "media_views": 2.0,
+      "total_views": 2,
+      "qtd": 1
+    },
+    {
+      "selo": "PARA TODO O BRASIL",
+      "media_views": 2.0,
+      "total_views": 8,
+      "qtd": 4
+    },
+    {
+      "selo": "COBRANÇA FORTE",
       "media_views": 2.0,
       "total_views": 2,
       "qtd": 1
@@ -71,34 +119,28 @@
       "qtd": 1
     },
     {
+      "selo": "ALERTA URGENTE",
+      "media_views": 1.2,
+      "total_views": 6,
+      "qtd": 5
+    },
+    {
+      "selo": "RETA FINAL",
+      "media_views": 1.0,
+      "total_views": 1,
+      "qtd": 1
+    },
+    {
+      "selo": "APOIO EXTERNO",
+      "media_views": 1.0,
+      "total_views": 1,
+      "qtd": 1
+    },
+    {
       "selo": "ECONOMIA REAL",
       "media_views": 0.5,
       "total_views": 1,
       "qtd": 2
-    },
-    {
-      "selo": "UTILIDADE PÚBLICA",
-      "media_views": 0.3,
-      "total_views": 2,
-      "qtd": 6
-    },
-    {
-      "selo": "ALERTA URGENTE",
-      "media_views": 0.3,
-      "total_views": 1,
-      "qtd": 3
-    },
-    {
-      "selo": "RECADO DIRETO",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 3
-    },
-    {
-      "selo": "DEBATE QUENTE",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 1
     },
     {
       "selo": "SOBERANIA",
@@ -107,25 +149,13 @@
       "qtd": 1
     },
     {
+      "selo": "DEBATE QUENTE",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
       "selo": "ANÁLISE DIRETA",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 1
-    },
-    {
-      "selo": "COBRANÇA FORTE",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 1
-    },
-    {
-      "selo": "INVESTIGAÇÃO ABERTA",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 1
-    },
-    {
-      "selo": "CONTA NÃO FECHA",
       "media_views": 0.0,
       "total_views": 0,
       "qtd": 1
@@ -143,19 +173,13 @@
       "qtd": 1
     },
     {
-      "selo": "COBRANÇA DIRETA",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 1
-    },
-    {
-      "selo": "RETA FINAL",
-      "media_views": 0.0,
-      "total_views": 0,
-      "qtd": 1
-    },
-    {
       "selo": "CONTAS PÚBLICAS",
+      "media_views": 0.0,
+      "total_views": 0,
+      "qtd": 1
+    },
+    {
+      "selo": "ALERTA MÁXIMO",
       "media_views": 0.0,
       "total_views": 0,
       "qtd": 1
@@ -163,25 +187,55 @@
   ],
   "ranking_horarios": [
     {
+      "horario": "11:30",
+      "media_views": 7.7,
+      "total_views": 139,
+      "qtd": 18
+    },
+    {
       "horario": "20:30",
-      "media_views": 1.3,
-      "total_views": 13,
-      "qtd": 10
+      "media_views": 4.4,
+      "total_views": 83,
+      "qtd": 19
     },
     {
       "horario": "17:30",
-      "media_views": 0.6,
-      "total_views": 6,
-      "qtd": 10
-    },
-    {
-      "horario": "11:30",
-      "media_views": 0.3,
-      "total_views": 3,
-      "qtd": 10
+      "media_views": 2.0,
+      "total_views": 38,
+      "qtd": 19
     }
   ],
   "top_videos": [
+    {
+      "id": "i7d3s8sIL2c_1",
+      "video_id": "dfZNTjzLX1A",
+      "url": "https://youtube.com/shorts/dfZNTjzLX1A",
+      "title": "PEDMEIA: Pagamento de novas parcelas começa hoje para estudantes",
+      "horario_sugerido": "11:30",
+      "titulo_capa": "UTILIDADE PÚBLICA: \"R$ 200 para estudantes!\"",
+      "duracao": 84.0,
+      "video_origem": "20261123_i7d3s8sIL2c_BRASIL_EM_DIA_23_11_206.mp4",
+      "views": 101,
+      "likes": 3,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-25T08:00:50"
+    },
+    {
+      "id": "XqZZOSWr8EA_3",
+      "video_id": "oLsop_0uxDc",
+      "url": "https://youtube.com/shorts/oLsop_0uxDc",
+      "title": "Combate ao racismo nas escolas e equidade na saúde entram em votação na Câmara",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "HISTÓRIA VIVA: 'Combate ao racismo nas escolas e saúde da população negra em votação'",
+      "duracao": 23.8,
+      "video_origem": "20261122_XqZZOSWr8EA_Perspectivas_de_votacoes_na_proxima_semana_no_Plenario_d.mp4",
+      "views": 19,
+      "likes": 1,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-25T08:00:42"
+    },
     {
       "id": "2EcokGX0v6s_3",
       "video_id": "6K3GxH2eKb0",
@@ -191,86 +245,11 @@
       "titulo_capa": "HISTÓRIA VIVA: 'É SÓ GRATIDÃO POR ESSE RECONHECIMENTO'",
       "duracao": 74.7,
       "video_origem": "20261119_2EcokGX0v6s_Projeto_Elas_no_Jogo_lanca_exposicao_itinerante_gratuita.mp4",
-      "views": 6,
+      "views": 15,
       "likes": 0,
       "comments": 0,
       "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:49:10"
-    },
-    {
-      "id": "jYFwbYTu8E4_3",
-      "video_id": "bPdimSxcEdU",
-      "url": "https://youtube.com/shorts/bPdimSxcEdU",
-      "title": "Universidade Federal do Esporte terá EAD para todo o Brasil e fiscalização da Câmara",
-      "horario_sugerido": "20:30",
-      "titulo_capa": "PARA TODO O BRASIL: 'Terá cursos presenciais e EAD'",
-      "duracao": 95.0,
-      "video_origem": "20261119_jYFwbYTu8E4_Julio_Cesar_Ribeiro_explica_como_funcionara_a_Universidade.mp4",
-      "views": 5,
-      "likes": 0,
-      "comments": 0,
-      "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:49:00"
-    },
-    {
-      "id": "URSDs-ybsRU_2",
-      "video_id": "2F95WK5MRjE",
-      "url": "https://youtube.com/shorts/2F95WK5MRjE",
-      "title": "De Temer a Lula: por que a regulamentação das bets falhou?",
-      "horario_sugerido": "17:30",
-      "titulo_capa": "COBRANÇA FIRME: 'Trataram as bets só para arrecadar, e não como saúde'",
-      "duracao": 83.7,
-      "video_origem": "20261120_URSDs-ybsRU_Me_conta_+_Dep._Pedro_Campos_-_Bets_-_20_11_26.mp4",
-      "views": 3,
-      "likes": 0,
-      "comments": 0,
-      "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:49:09"
-    },
-    {
-      "id": "CSPfVyuG1sI_2",
-      "video_id": "xHtsGKDIRdA",
-      "url": "https://youtube.com/shorts/xHtsGKDIRdA",
-      "title": "De vilão a referência: Brasil vence Prêmio Raio de Luz com queda histórica no desmatamento",
-      "horario_sugerido": "17:30",
-      "titulo_capa": "CONTRASTE DIRETO: 'O Brasil mostrou que é possível!'",
-      "duracao": 76.5,
-      "video_origem": "20261117_CSPfVyuG1sI_BRASIL_-_O_RAIO_DE_LUZ_NA_PROTECAO_DO_MEIO_AMBIENTE.mp4",
-      "views": 2,
-      "likes": 0,
-      "comments": 0,
-      "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:48:53"
-    },
-    {
-      "id": "TIVjSUMTK-k_3",
-      "video_id": "J6hc9BOm3cQ",
-      "url": "https://youtube.com/shorts/J6hc9BOm3cQ",
-      "title": "O desespero de uma mãe em Bacabal: relato emocionante sobre o desaparecimento dos filhos de 4 e 6 anos",
-      "horario_sugerido": "20:30",
-      "titulo_capa": "RELATO COMOVENTE: 'Quando cheguei, era só desespero e ninguém encontrava'",
-      "duracao": 67.5,
-      "video_origem": "20261120_TIVjSUMTK-k_Diligencias_em_Bacabal_MA_acompanham_buscas_por_criancas.mp4",
-      "views": 2,
-      "likes": 0,
-      "comments": 0,
-      "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:49:04"
-    },
-    {
-      "id": "CSPfVyuG1sI_1",
-      "video_id": "Cf4MZM8E5SA",
-      "url": "https://youtube.com/shorts/Cf4MZM8E5SA",
-      "title": "O mercado resolve tudo? O recado direto do BNDES sobre economia, renda e Amazônia",
-      "horario_sugerido": "11:30",
-      "titulo_capa": "ECONOMIA REAL: 'O mercado não resolve tudo!'",
-      "duracao": 50.0,
-      "video_origem": "20261117_CSPfVyuG1sI_BRASIL_-_O_RAIO_DE_LUZ_NA_PROTECAO_DO_MEIO_AMBIENTE.mp4",
-      "views": 1,
-      "likes": 0,
-      "comments": 0,
-      "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:48:53"
+      "atualizado_em": "2026-11-25T08:00:24"
     },
     {
       "id": "jYFwbYTu8E4_1",
@@ -281,57 +260,102 @@
       "titulo_capa": "UTILIDADE PÚBLICA: 'Mais de 3 mil alunos a partir de 2027'",
       "duracao": 64.0,
       "video_origem": "20261119_jYFwbYTu8E4_Julio_Cesar_Ribeiro_explica_como_funcionara_a_Universidade.mp4",
-      "views": 1,
+      "views": 10,
       "likes": 0,
       "comments": 0,
       "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:48:59"
+      "atualizado_em": "2026-11-25T08:00:15"
     },
     {
-      "id": "TIVjSUMTK-k_2",
-      "video_id": "ngI1RJ-7TK4",
-      "url": "https://youtube.com/shorts/ngI1RJ-7TK4",
-      "title": "Alerta Vermelho da Interpol: Senado cobra federalização nas buscas por crianças em Bacabal",
-      "horario_sugerido": "17:30",
-      "titulo_capa": "ALERTA URGENTE: 'Caso entrou na Interpol e há suspeita de crianças fora do país'",
-      "duracao": 92.2,
-      "video_origem": "20261120_TIVjSUMTK-k_Diligencias_em_Bacabal_MA_acompanham_buscas_por_criancas.mp4",
-      "views": 1,
-      "likes": 0,
-      "comments": 0,
-      "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:49:04"
-    },
-    {
-      "id": "TO3oHDGPbh0_1",
-      "video_id": "4vcu9vDqHwo",
-      "url": "https://youtube.com/shorts/4vcu9vDqHwo",
-      "title": "Protocolo Nacional para Crianças Desaparecidas: Senado Propõe Ação Imediata e Mais Verba",
+      "id": "TIVjSUMTK-k_1",
+      "video_id": "tbn53ZUanLE",
+      "url": "https://youtube.com/shorts/tbn53ZUanLE",
+      "title": "23.970 crianças desaparecidas em 2025: Senado abre canal 0800 gratuito e sigiloso para denúncias",
       "horario_sugerido": "11:30",
-      "titulo_capa": "UTILIDADE PÚBLICA: 'NOVO PROTOCOLO NACIONAL E MAIS VERBA NAS BUSCAS'",
-      "duracao": 64.0,
-      "video_origem": "20261120_TO3oHDGPbh0_Edson_Davi_-_desaparecimento_do_menino_de_6_anos_no_Rio_mob.mp4",
-      "views": 1,
+      "titulo_capa": "UTILIDADE PÚBLICA: 'O telefone do Senado está aberto e gratuito para denúncias'",
+      "duracao": 85.0,
+      "video_origem": "20261120_TIVjSUMTK-k_Diligencias_em_Bacabal_MA_acompanham_buscas_por_criancas.mp4",
+      "views": 10,
       "likes": 0,
       "comments": 0,
       "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:49:04"
+      "atualizado_em": "2026-11-25T08:00:19"
     },
     {
-      "id": "91kIna3CvP4_3",
-      "video_id": "MOTl25Nj2Vg",
-      "url": "https://youtube.com/shorts/MOTl25Nj2Vg",
-      "title": "Lula agradece 4º mandato, fala em soberania e critica Big Techs nas eleições",
+      "id": "fO9TK7mbYwE_3",
+      "video_id": "ZxAhbD-u3rQ",
+      "url": "https://youtube.com/shorts/ZxAhbD-u3rQ",
+      "title": "Discurso emocionante de Benedita da Silva e Paulo Paim no Congresso: 'Mandato de causas, não de casos'",
       "horario_sugerido": "20:30",
-      "titulo_capa": "RECADO DIRETO: Lula critica Big Techs e diz que 'o Brasil não cabe no quintal de ninguém'",
-      "duracao": 94.9,
-      "video_origem": "20261108_91kIna3CvP4_Presidente_Lula_faz_pronunciamento_ao_Brasil.mp4",
-      "views": 0,
+      "titulo_capa": "MOMENTO HISTÓRICO: 'NINGUÉM VAI ME TIRAR DAS RUAS'",
+      "duracao": 67.4,
+      "video_origem": "20261120_fO9TK7mbYwE_Populacao_negra_-_politica_de_saude_busca_enfrentar_vulne.mp4",
+      "views": 10,
       "likes": 0,
       "comments": 0,
       "status_video": "publico",
-      "atualizado_em": "2026-11-21T15:48:53"
+      "atualizado_em": "2026-11-25T08:00:38"
+    },
+    {
+      "id": "8H5ks6GHUX4_3",
+      "video_id": "Sq1ZRfwiaSs",
+      "url": "https://youtube.com/shorts/Sq1ZRfwiaSs",
+      "title": "Onde está Edson Davi? Mãe leva chinelo do filho ao Senado em busca de respostas após quase 3 anos",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "RECADO DIRETO: 'A sociedade quer uma resposta: onde está o menino Davi?'",
+      "duracao": 47.0,
+      "video_origem": "20261120_8H5ks6GHUX4_CDH_vai_ao_Rio_de_Janeiro_acompanhar_caso_Edson_Davi_e_discu.mp4",
+      "views": 9,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-25T08:00:37"
+    },
+    {
+      "id": "jYFwbYTu8E4_3",
+      "video_id": "bPdimSxcEdU",
+      "url": "https://youtube.com/shorts/bPdimSxcEdU",
+      "title": "Universidade Federal do Esporte terá EAD para todo o Brasil e fiscalização da Câmara",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "PARA TODO O BRASIL: 'Terá cursos presenciais e EAD'",
+      "duracao": 95.0,
+      "video_origem": "20261119_jYFwbYTu8E4_Julio_Cesar_Ribeiro_explica_como_funcionara_a_Universidade.mp4",
+      "views": 8,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-25T08:00:15"
+    },
+    {
+      "id": "dwHzDzHqvjI_3",
+      "video_id": "avgIJv6tTsg",
+      "url": "https://youtube.com/shorts/avgIJv6tTsg",
+      "title": "Samuel de Assis se emociona ao falar da luta contra o racismo: 'Aprendi na dor'",
+      "horario_sugerido": "20:30",
+      "titulo_capa": "RECADO DIRETO: 'Meu aprendizado veio na dor, mas minha luta é no afeto'",
+      "duracao": 72.0,
+      "video_origem": "20261120_dwHzDzHqvjI_SEM_CENSURA_RECEBE_SAMUEL_DE_ASSIS_ANA_PAULA_XONGANI_E_EMER.mp4",
+      "views": 8,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-25T08:00:34"
+    },
+    {
+      "id": "TO3oHDGPbh0_2",
+      "video_id": "vavfoX5y-zc",
+      "url": "https://youtube.com/shorts/vavfoX5y-zc",
+      "title": "Caso Edson Davi: Polícia Civil Explica Tese de Afogamento e Senado Garante que Caso Segue Aberto",
+      "horario_sugerido": "17:30",
+      "titulo_capa": "INVESTIGAÇÃO ABERTA: 'A MÃE NÃO ACEITA E O CASO NÃO FOI ENCERRADO'",
+      "duracao": 89.1,
+      "video_origem": "20261120_TO3oHDGPbh0_Edson_Davi_-_desaparecimento_do_menino_de_6_anos_no_Rio_mob.mp4",
+      "views": 7,
+      "likes": 0,
+      "comments": 0,
+      "status_video": "publico",
+      "atualizado_em": "2026-11-25T08:00:19"
     }
   ],
-  "diretriz_retroalimentacao": "### 📊 INTELIGÊNCIA EDITORIAL BASEADA EM DESEMPENHO REAL DO CANAL:\n- Faixa de duração mais assistida pela audiência recente: **90s a 100s** (priorize cortes nesta faixa).\n- Selos de título de capa com maior engajamento comprovado: **HISTÓRIA VIVA, PARA TODO O BRASIL, COBRANÇA FIRME**.\n- Horário com maior retenção orgânica na grade: **20:30**.\n- Exemplos reais de cortes com melhor engajamento recente no canal (inspire-se na estrutura, tom e temática):\n  * \"O emocionante reconhecimento às pioneiras do futebol feminino na exposição Elas no Jogo\" (6 views, 74.7s, selo: HISTÓRIA VIVA)\n  * \"Universidade Federal do Esporte terá EAD para todo o Brasil e fiscalização da Câmara\" (5 views, 95.0s, selo: PARA TODO O BRASIL)\n  * \"De Temer a Lula: por que a regulamentação das bets falhou?\" (3 views, 83.7s, selo: COBRANÇA FIRME)\n-> Na seleção dos trechos, dê preferência a falas com dinâmicas, ganchos e densidade argumentativa semelhantes aos campeões de visualizações."
+  "diretriz_retroalimentacao": "### 📊 INTELIGÊNCIA EDITORIAL BASEADA EM DESEMPENHO REAL DO CANAL:\n- Faixa de duração mais assistida pela audiência recente: **75s a 90s** (priorize cortes nesta faixa).\n- Selos de título de capa com maior engajamento comprovado: **UTILIDADE PÚBLICA, MOMENTO HISTÓRICO, HISTÓRIA VIVA**.\n- Horário com maior retenção orgânica na grade: **11:30**.\n- Exemplos reais de cortes com melhor engajamento recente no canal (inspire-se na estrutura, tom e temática):\n  * \"PEDMEIA: Pagamento de novas parcelas começa hoje para estudantes\" (101 views, 84.0s, selo: UTILIDADE PÚBLICA)\n  * \"Combate ao racismo nas escolas e equidade na saúde entram em votação na Câmara\" (19 views, 23.8s, selo: HISTÓRIA VIVA)\n  * \"O emocionante reconhecimento às pioneiras do futebol feminino na exposição Elas no Jogo\" (15 views, 74.7s, selo: HISTÓRIA VIVA)\n-> Na seleção dos trechos, dê preferência a falas com dinâmicas, ganchos e densidade argumentativa semelhantes aos campeões de visualizações."
 }

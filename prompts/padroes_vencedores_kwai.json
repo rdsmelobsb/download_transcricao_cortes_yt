@@ -1,324 +1,132 @@
 {
-  "atualizado_em": "2026-11-22T22:55:25",
-  "total_auditados": 33,
-  "total_views": 23994,
-  "media_views": 727.1,
-  "total_likes": 883,
-  "total_comments": 18,
+  "atualizado_em": "2026-11-24T18:27:54",
+  "total_auditados": 20,
+  "total_views": 11648,
+  "media_views": 582.4,
+  "total_likes": 366,
+  "total_comments": 3,
   "total_shares": 0,
-  "melhor_faixa_duracao": "60s a 75s",
+  "melhor_faixa_duracao": "90s a 100s+",
   "melhores_selos": [
-    "CONTRASTE POLÍTICO",
-    "MOMENTO HISTÓRICO",
-    "SOBERANIA"
+    "HISTÓRIA VIVA",
+    "COBRANÇA FIRME",
+    "FIM DA COBRANÇA"
   ],
   "ranking_duracao": [
     {
-      "faixa": "60s a 75s",
-      "media_views": 873.9,
-      "total_views": 7865,
-      "total_likes": 338,
-      "qtd": 9
+      "faixa": "90s a 100s+",
+      "media_views": 701.2,
+      "total_views": 2805,
+      "total_likes": 104,
+      "qtd": 4
     },
     {
       "faixa": "75s a 90s",
-      "media_views": 732.3,
-      "total_views": 4394,
-      "total_likes": 172,
-      "qtd": 6
+      "media_views": 622.8,
+      "total_views": 2491,
+      "total_likes": 85,
+      "qtd": 4
+    },
+    {
+      "faixa": "60s a 75s",
+      "media_views": 596.0,
+      "total_views": 2980,
+      "total_likes": 93,
+      "qtd": 5
     },
     {
       "faixa": "45s a 60s",
-      "media_views": 655.8,
-      "total_views": 8525,
-      "total_likes": 274,
-      "qtd": 13
-    },
-    {
-      "faixa": "90s a 100s+",
-      "media_views": 642.0,
-      "total_views": 3210,
-      "total_likes": 99,
-      "qtd": 5
+      "media_views": 481.7,
+      "total_views": 3372,
+      "total_likes": 84,
+      "qtd": 7
     }
   ],
   "ranking_selos": [
     {
-      "selo": "CONTRASTE POLÍTICO",
-      "media_views": 1075.0,
-      "total_views": 1075,
-      "total_likes": 53,
-      "qtd": 1
-    },
-    {
-      "selo": "MOMENTO HISTÓRICO",
-      "media_views": 1053.0,
-      "total_views": 1053,
-      "total_likes": 48,
-      "qtd": 1
-    },
-    {
-      "selo": "SOBERANIA",
-      "media_views": 1025.0,
-      "total_views": 1025,
-      "total_likes": 45,
-      "qtd": 1
-    },
-    {
-      "selo": "INVESTIGAÇÃO ABERTA",
-      "media_views": 1014.0,
-      "total_views": 1014,
-      "total_likes": 43,
-      "qtd": 1
-    },
-    {
-      "selo": "DEBATE ECONÔMICO",
-      "media_views": 908.0,
-      "total_views": 908,
-      "total_likes": 34,
-      "qtd": 1
-    },
-    {
-      "selo": "ALERTA URGENTE",
-      "media_views": 812.0,
-      "total_views": 3248,
-      "total_likes": 122,
+      "selo": "HISTÓRIA VIVA",
+      "media_views": 701.2,
+      "total_views": 2805,
+      "total_likes": 104,
       "qtd": 4
     },
     {
       "selo": "COBRANÇA FIRME",
-      "media_views": 797.3,
-      "total_views": 2392,
-      "total_likes": 100,
+      "media_views": 634.0,
+      "total_views": 2536,
+      "total_likes": 88,
+      "qtd": 4
+    },
+    {
+      "selo": "FIM DA COBRANÇA",
+      "media_views": 631.0,
+      "total_views": 631,
+      "total_likes": 22,
+      "qtd": 1
+    },
+    {
+      "selo": "PARA TODO O BRASIL",
+      "media_views": 579.3,
+      "total_views": 1738,
+      "total_likes": 50,
       "qtd": 3
     },
     {
       "selo": "UTILIDADE PÚBLICA",
-      "media_views": 747.8,
-      "total_views": 4487,
-      "total_likes": 176,
-      "qtd": 6
-    },
-    {
-      "selo": "PARA TODO O BRASIL",
-      "media_views": 687.5,
-      "total_views": 1375,
-      "total_likes": 47,
-      "qtd": 2
-    },
-    {
-      "selo": "HISTÓRIA VIVA",
-      "media_views": 645.5,
-      "total_views": 1291,
-      "total_likes": 42,
-      "qtd": 2
-    },
-    {
-      "selo": "RECADO DIRETO",
-      "media_views": 642.0,
-      "total_views": 2568,
-      "total_likes": 79,
-      "qtd": 4
-    },
-    {
-      "selo": "CONTA NÃO FECHA",
-      "media_views": 623.0,
-      "total_views": 623,
+      "media_views": 554.0,
+      "total_views": 554,
       "total_likes": 18,
       "qtd": 1
     },
     {
-      "selo": "DEBATE QUENTE",
-      "media_views": 576.0,
-      "total_views": 576,
-      "total_likes": 16,
-      "qtd": 1
-    },
-    {
-      "selo": "ECONOMIA REAL",
-      "media_views": 559.0,
-      "total_views": 1118,
-      "total_likes": 29,
-      "qtd": 2
-    },
-    {
-      "selo": "ANÁLISE DIRETA",
-      "media_views": 547.0,
-      "total_views": 547,
+      "selo": "MOMENTO HISTÓRICO",
+      "media_views": 553.0,
+      "total_views": 553,
       "total_likes": 13,
       "qtd": 1
     },
     {
-      "selo": "CONTAS PÚBLICAS",
-      "media_views": 431.0,
-      "total_views": 431,
+      "selo": "ALERTA URGENTE",
+      "media_views": 510.3,
+      "total_views": 1531,
+      "total_likes": 46,
+      "qtd": 3
+    },
+    {
+      "selo": "RECADO DIRETO",
+      "media_views": 446.0,
+      "total_views": 446,
       "total_likes": 8,
       "qtd": 1
     },
     {
-      "selo": "RELATO COMOVENTE",
-      "media_views": 263.0,
-      "total_views": 263,
-      "total_likes": 10,
+      "selo": "INVESTIGAÇÃO ABERTA",
+      "media_views": 439.0,
+      "total_views": 439,
+      "total_likes": 8,
+      "qtd": 1
+    },
+    {
+      "selo": "RISCO GRAVE",
+      "media_views": 415.0,
+      "total_views": 415,
+      "total_likes": 9,
       "qtd": 1
     }
   ],
   "top_videos": [
     {
-      "id": "gsqkYPR2OsI_3",
-      "title": "255 mil desalojados e alerta de El Niño extremo: o apelo urgente no Congresso",
-      "titulo_capa": "ALERTA URGENTE: '255 MIL DESALOJADOS E O PIOR EL NIÑO VEM AÍ'",
-      "duracao": 74.0,
-      "kwai_publicado_em": "2026-11-20T14:20:19",
-      "views": 1076,
-      "likes": 52,
+      "id": "k3PpS8lxz6U_2",
+      "title": "Por que a Bandeira do Brasil destruída no 8 de janeiro não foi restaurada no Planalto",
+      "titulo_capa": "COBRANÇA FIRME: 'Uma lembrança para que isso nunca mais aconteça'",
+      "duracao": 87.0,
+      "kwai_publicado_em": "2026-11-22T23:27:17",
+      "views": 856,
+      "likes": 40,
       "comments": 0,
       "shares": 0,
-      "engajamento_pct": 4.83,
-      "atualizado_em": "2026-11-22T22:55:22"
-    },
-    {
-      "id": "Gzegts8LXaI_2",
-      "title": "Programa eleitoral faz acusações sobre milícias, emendas e esquemas financeiros",
-      "titulo_capa": "CONTRASTE POLÍTICO: Propaganda eleitoral levanta acusações na reta final",
-      "duracao": 61.5,
-      "kwai_publicado_em": "2026-11-20T16:36:03",
-      "views": 1075,
-      "likes": 53,
-      "comments": 2,
-      "shares": 0,
-      "engajamento_pct": 5.12,
-      "atualizado_em": "2026-11-22T22:54:34"
-    },
-    {
-      "id": "2EcokGX0v6s_1",
-      "title": "Exposição gratuita Elas no Jogo chega às escolas e à internet: veja como participar!",
-      "titulo_capa": "UTILIDADE PÚBLICA: 'ESSE É UM LUGAR DE JOGO PARA ELAS'",
-      "duracao": 80.7,
-      "kwai_publicado_em": "2026-11-20T16:24:36",
-      "views": 1059,
-      "likes": 46,
-      "comments": 2,
-      "shares": 0,
-      "engajamento_pct": 4.53,
-      "atualizado_em": "2026-11-22T22:54:41"
-    },
-    {
-      "id": "fO9TK7mbYwE_3",
-      "title": "Discurso emocionante de Benedita da Silva e Paulo Paim no Congresso: 'Mandato de causas, não de casos'",
-      "titulo_capa": "MOMENTO HISTÓRICO: 'NINGUÉM VAI ME TIRAR DAS RUAS'",
-      "duracao": 67.4,
-      "kwai_publicado_em": "2026-11-21T17:12:33",
-      "views": 1053,
-      "likes": 48,
-      "comments": 1,
-      "shares": 0,
-      "engajamento_pct": 4.65,
-      "atualizado_em": "2026-11-22T22:54:18"
-    },
-    {
-      "id": "TIVjSUMTK-k_1",
-      "title": "23.970 crianças desaparecidas em 2025: Senado abre canal 0800 gratuito e sigiloso para denúncias",
-      "titulo_capa": "UTILIDADE PÚBLICA: 'O telefone do Senado está aberto e gratuito para denúncias'",
-      "duracao": 85.0,
-      "kwai_publicado_em": "2026-11-20T15:03:36",
-      "views": 1047,
-      "likes": 48,
-      "comments": 1,
-      "shares": 0,
-      "engajamento_pct": 4.68,
-      "atualizado_em": "2026-11-22T22:55:06"
-    },
-    {
-      "id": "CSPfVyuG1sI_3",
-      "title": "RECADO AO MUNDO: 'Nenhum país tem mais autoridade que o Brasil se tratando do clima'",
-      "titulo_capa": "SOBERANIA: 'O Brasil não caiu no quintal de ninguém!'",
-      "duracao": 63.0,
-      "kwai_publicado_em": "2026-11-20T16:28:00",
-      "views": 1025,
-      "likes": 45,
-      "comments": 2,
-      "shares": 0,
-      "engajamento_pct": 4.59,
-      "atualizado_em": "2026-11-22T22:54:39"
-    },
-    {
-      "id": "TO3oHDGPbh0_2",
-      "title": "Caso Edson Davi: Polícia Civil Explica Tese de Afogamento e Senado Garante que Caso Segue Aberto",
-      "titulo_capa": "INVESTIGAÇÃO ABERTA: 'A MÃE NÃO ACEITA E O CASO NÃO FOI ENCERRADO'",
-      "duracao": 89.1,
-      "kwai_publicado_em": "2026-11-20T16:44:16",
-      "views": 1014,
-      "likes": 43,
-      "comments": 1,
-      "shares": 0,
-      "engajamento_pct": 4.34,
-      "atualizado_em": "2026-11-22T22:54:30"
-    },
-    {
-      "id": "XqZZOSWr8EA_2",
-      "title": "Ajuste fiscal e teto salarial do serviço público avançam no Senado e vão à Câmara",
-      "titulo_capa": "COBRANÇA FIRME: 'Teto salarial do serviço público e ajuste fiscal na pauta da Câmara'",
-      "duracao": 49.8,
-      "kwai_publicado_em": "2026-11-22T10:01:37",
-      "views": 1005,
-      "likes": 47,
-      "comments": 1,
-      "shares": 0,
-      "engajamento_pct": 4.78,
-      "atualizado_em": "2026-11-22T22:54:07"
-    },
-    {
-      "id": "1O0xO3wNwVY_2",
-      "title": "Pietá faz recado firme no Rio sobre ocupar espaços políticos e fortalecer a luta social",
-      "titulo_capa": "COBRANÇA FIRME: 'É preciso ocupar os espaços políticos agora'",
-      "duracao": 62.0,
-      "kwai_publicado_em": "2026-11-22T09:59:41",
-      "views": 1005,
-      "likes": 47,
-      "comments": 1,
-      "shares": 0,
-      "engajamento_pct": 4.78,
-      "atualizado_em": "2026-11-22T22:54:10"
-    },
-    {
-      "id": "jYFwbYTu8E4_1",
-      "title": "Universidade Federal do Esporte já tem data para abrir e prevê mais de 3 mil alunos",
-      "titulo_capa": "UTILIDADE PÚBLICA: 'Mais de 3 mil alunos a partir de 2027'",
-      "duracao": 64.0,
-      "kwai_publicado_em": "2026-11-20T14:47:44",
-      "views": 956,
-      "likes": 39,
-      "comments": 1,
-      "shares": 0,
-      "engajamento_pct": 4.18,
-      "atualizado_em": "2026-11-22T22:55:16"
-    },
-    {
-      "id": "Gzegts8LXaI_1",
-      "title": "Campanha de Lula cita cortes de R$ 250 bi, escala 6x1 e Petrobras no programa eleitoral",
-      "titulo_capa": "DEBATE ECONÔMICO: Campanha aborda direitos, escala 6x1 e Petrobras",
-      "duracao": 47.4,
-      "kwai_publicado_em": "2026-11-20T16:10:31",
-      "views": 908,
-      "likes": 34,
-      "comments": 0,
-      "shares": 0,
-      "engajamento_pct": 3.74,
-      "atualizado_em": "2026-11-22T22:54:50"
-    },
-    {
-      "id": "1O0xO3wNwVY_1",
-      "title": "A importância da TV pública para democratizar a cultura e o ensino no Brasil",
-      "titulo_capa": "PARA TODO O BRASIL: 'TV pública garante acesso à cultura e ao ensino'",
-      "duracao": 55.0,
-      "kwai_publicado_em": "2026-11-22T09:54:07",
-      "views": 906,
-      "likes": 37,
-      "comments": 2,
-      "shares": 0,
-      "engajamento_pct": 4.3,
-      "atualizado_em": "2026-11-22T22:54:15"
+      "engajamento_pct": 4.67,
+      "atualizado_em": "2026-11-24T18:27:30"
     },
     {
       "id": "3864e01e_3",
@@ -326,39 +134,182 @@
       "titulo_capa": "HISTÓRIA VIVA: 'O povo brasileiro não é inferior a ninguém'",
       "duracao": 96.0,
       "kwai_publicado_em": "2026-11-21T17:11:43",
-      "views": 839,
-      "likes": 33,
-      "comments": 0,
-      "shares": 0,
-      "engajamento_pct": 3.93,
-      "atualizado_em": "2026-11-22T22:54:20"
-    },
-    {
-      "id": "fO9TK7mbYwE_1",
-      "title": "Dado chocante sobre mortalidade em Florianópolis revela por que lei de saúde no SUS é urgente",
-      "titulo_capa": "ALERTA URGENTE: 'MORRE 3X MAIS QUE A POPULAÇÃO BRANCA'",
-      "duracao": 50.0,
-      "kwai_publicado_em": "2026-11-21T17:03:06",
-      "views": 835,
+      "views": 850,
       "likes": 30,
       "comments": 0,
       "shares": 0,
-      "engajamento_pct": 3.59,
-      "atualizado_em": "2026-11-22T22:54:27"
+      "engajamento_pct": 3.53,
+      "atualizado_em": "2026-11-24T18:27:46"
     },
     {
-      "id": "91kIna3CvP4_3",
-      "title": "Lula agradece 4º mandato, fala em soberania e critica Big Techs nas eleições",
-      "titulo_capa": "RECADO DIRETO: Lula critica Big Techs e diz que 'o Brasil não cabe no quintal de ninguém'",
-      "duracao": 94.9,
-      "kwai_publicado_em": "2026-11-20T16:20:53",
-      "views": 788,
-      "likes": 28,
+      "id": "_aeUMftbS8Q_3",
+      "title": "Baden Powell revela a versão mais bonita de Elis Regina e canta Canto de Ossanha ao vivo",
+      "titulo_capa": "HISTÓRIA VIVA: 'A mais bonita que Elis Regina gravou'",
+      "duracao": 98.0,
+      "kwai_publicado_em": "2026-11-23T09:02:52",
+      "views": 841,
+      "likes": 38,
       "comments": 0,
       "shares": 0,
-      "engajamento_pct": 3.55,
-      "atualizado_em": "2026-11-22T22:54:45"
+      "engajamento_pct": 4.52,
+      "atualizado_em": "2026-11-24T18:27:26"
+    },
+    {
+      "id": "1O0xO3wNwVY_3",
+      "title": "Nasce no Brasil: manifesto poético denuncia violências e exalta a resistência do povo",
+      "titulo_capa": "HISTÓRIA VIVA: 'Resistência que nasce das entranhas do Brasil'",
+      "duracao": 91.0,
+      "kwai_publicado_em": "2026-11-22T10:05:00",
+      "views": 736,
+      "likes": 29,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.94,
+      "atualizado_em": "2026-11-24T18:27:34"
+    },
+    {
+      "id": "WGo8Q55fFL4_3",
+      "title": "Onda REDPILL e ódio online: Big Techs precisam ser responsabilizadas",
+      "titulo_capa": "ALERTA URGENTE: 'Remuneram ódio contra nossos corpos'",
+      "duracao": 75.0,
+      "kwai_publicado_em": "2026-11-24T18:02:52",
+      "views": 725,
+      "likes": 30,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 4.14,
+      "atualizado_em": "2026-11-24T18:27:20"
+    },
+    {
+      "id": "1O0xO3wNwVY_2",
+      "title": "Pietá faz recado firme no Rio sobre ocupar espaços políticos e fortalecer a luta social",
+      "titulo_capa": "COBRANÇA FIRME: 'É preciso ocupar os espaços políticos agora'",
+      "duracao": 62.0,
+      "kwai_publicado_em": "2026-11-22T09:59:41",
+      "views": 716,
+      "likes": 24,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.35,
+      "atualizado_em": "2026-11-24T18:27:38"
+    },
+    {
+      "id": "XqZZOSWr8EA_1",
+      "title": "Lei Maria da Penha, trânsito mais rígido, educação integral e Dia dos Professores entram na pauta da Câmara",
+      "titulo_capa": "PARA TODO O BRASIL: 'Mais proteção às mulheres, rigor no trânsito e educação integral'",
+      "duracao": 52.2,
+      "kwai_publicado_em": "2026-11-22T09:57:01",
+      "views": 716,
+      "likes": 24,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.35,
+      "atualizado_em": "2026-11-24T18:27:39"
+    },
+    {
+      "id": "3864e01e_2",
+      "title": "Lula rebate cobranças do mercado financeiro e descarta cortes sociais no ajuste fiscal",
+      "titulo_capa": "COBRANÇA FIRME: 'Não tiro um centavo dos pobres no orçamento'",
+      "duracao": 79.0,
+      "kwai_publicado_em": "2026-11-21T17:06:44",
+      "views": 642,
+      "likes": 19,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 2.96,
+      "atualizado_em": "2026-11-24T18:27:49"
+    },
+    {
+      "id": "VwP2Mc7_Ixc_1",
+      "title": "BAHIA: Deputado Jorge Sola detalha extinção de contrato da Via Bahia por falhas",
+      "titulo_capa": "FIM DA COBRANÇA: 'Pedágio sem serviço!'",
+      "duracao": 46.4,
+      "kwai_publicado_em": "2026-11-23T18:09:49",
+      "views": 631,
+      "likes": 22,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 3.49,
+      "atualizado_em": "2026-11-24T18:27:22"
+    },
+    {
+      "id": "_aeUMftbS8Q_1",
+      "title": "O resgate histórico de Baden Powell na TV Educativa em 1994: patrimônio cultural do Brasil",
+      "titulo_capa": "PARA TODO O BRASIL: 'Um dos maiores violonistas deste país'",
+      "duracao": 73.4,
+      "kwai_publicado_em": "2026-11-22T23:22:44",
+      "views": 571,
+      "likes": 17,
+      "comments": 2,
+      "shares": 0,
+      "engajamento_pct": 3.33,
+      "atualizado_em": "2026-11-24T18:27:32"
+    },
+    {
+      "id": "i7d3s8sIL2c_1",
+      "title": "PEDMEIA: Pagamento de novas parcelas começa hoje para estudantes",
+      "titulo_capa": "UTILIDADE PÚBLICA: \"R$ 200 para estudantes!\"",
+      "duracao": 84.0,
+      "kwai_publicado_em": "2026-11-23T18:05:23",
+      "views": 554,
+      "likes": 18,
+      "comments": 1,
+      "shares": 0,
+      "engajamento_pct": 3.43,
+      "atualizado_em": "2026-11-24T18:27:24"
+    },
+    {
+      "id": "fO9TK7mbYwE_3",
+      "title": "Discurso emocionante de Benedita da Silva e Paulo Paim no Congresso: 'Mandato de causas, não de casos'",
+      "titulo_capa": "MOMENTO HISTÓRICO: 'NINGUÉM VAI ME TIRAR DAS RUAS'",
+      "duracao": 67.4,
+      "kwai_publicado_em": "2026-11-21T17:12:33",
+      "views": 553,
+      "likes": 13,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 2.35,
+      "atualizado_em": "2026-11-24T18:27:44"
+    },
+    {
+      "id": "1O0xO3wNwVY_1",
+      "title": "A importância da TV pública para democratizar a cultura e o ensino no Brasil",
+      "titulo_capa": "PARA TODO O BRASIL: 'TV pública garante acesso à cultura e ao ensino'",
+      "duracao": 55.0,
+      "kwai_publicado_em": "2026-11-22T09:54:07",
+      "views": 451,
+      "likes": 9,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 2.0,
+      "atualizado_em": "2026-11-24T18:27:42"
+    },
+    {
+      "id": "fO9TK7mbYwE_2",
+      "title": "Deputada lista conquistas da Bancada Negra no Congresso: Lei de Cotas, Feriado e PNE Antirracista",
+      "titulo_capa": "RECADO DIRETO: 'HOJE NÃO ESTAMOS MAIS SOZINHAS!'",
+      "duracao": 54.5,
+      "kwai_publicado_em": "2026-11-21T17:10:01",
+      "views": 446,
+      "likes": 8,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 1.79,
+      "atualizado_em": "2026-11-24T18:27:48"
+    },
+    {
+      "id": "TO3oHDGPbh0_2",
+      "title": "Caso Edson Davi: Polícia Civil Explica Tese de Afogamento e Senado Garante que Caso Segue Aberto",
+      "titulo_capa": "INVESTIGAÇÃO ABERTA: 'A MÃE NÃO ACEITA E O CASO NÃO FOI ENCERRADO'",
+      "duracao": 89.1,
+      "kwai_publicado_em": "2026-11-20T16:44:16",
+      "views": 439,
+      "likes": 8,
+      "comments": 0,
+      "shares": 0,
+      "engajamento_pct": 1.82,
+      "atualizado_em": "2026-11-24T18:27:53"
     }
   ],
-  "diretriz_retroalimentacao": "### 📊 INTELIGÊNCIA DE AUDIÊNCIA NO KWAI (DADOS REAIS DE 33 CORTES):\n- Média atual do canal no Kwai: **727.1 views/vídeo** (23994 views totais, 883 curtidas).\n- Faixa de duração com maior retenção no Kwai: **60s a 75s**.\n- Selos de capa com maior tração: **CONTRASTE POLÍTICO, MOMENTO HISTÓRICO, SOBERANIA**.\n- Top cortes campeões de audiência no Kwai:\n  * \"255 mil desalojados e alerta de El Niño extremo: o apelo urgente no Congresso\" (1076 views, 52 likes, 74.0s, selo: ALERTA URGENTE)\n  * \"Programa eleitoral faz acusações sobre milícias, emendas e esquemas financeiros\" (1075 views, 53 likes, 61.5s, selo: CONTRASTE POLÍTICO)\n  * \"Exposição gratuita Elas no Jogo chega às escolas e à internet: veja como participar!\" (1059 views, 46 likes, 80.7s, selo: UTILIDADE PÚBLICA)\n  * \"Discurso emocionante de Benedita da Silva e Paulo Paim no Congresso: 'Mandato de causas, não de casos'\" (1053 views, 48 likes, 67.4s, selo: MOMENTO HISTÓRICO)\n  * \"23.970 crianças desaparecidas em 2025: Senado abre canal 0800 gratuito e sigiloso para denúncias\" (1047 views, 48 likes, 85.0s, selo: UTILIDADE PÚBLICA)"
+  "diretriz_retroalimentacao": "### 📊 INTELIGÊNCIA DE AUDIÊNCIA NO KWAI (DADOS REAIS DE 20 CORTES):\n- Média atual do canal no Kwai: **582.4 views/vídeo** (11648 views totais, 366 curtidas).\n- Faixa de duração com maior retenção no Kwai: **90s a 100s+**.\n- Selos de capa com maior tração: **HISTÓRIA VIVA, COBRANÇA FIRME, FIM DA COBRANÇA**.\n- Top cortes campeões de audiência no Kwai:\n  * \"Por que a Bandeira do Brasil destruída no 8 de janeiro não foi restaurada no Planalto\" (856 views, 40 likes, 87.0s, selo: COBRANÇA FIRME)\n  * \"Lula cita origem operária para defender diálogo de igual para igual com líderes mundiais\" (850 views, 30 likes, 96.0s, selo: HISTÓRIA VIVA)\n  * \"Baden Powell revela a versão mais bonita de Elis Regina e canta Canto de Ossanha ao vivo\" (841 views, 38 likes, 98.0s, selo: HISTÓRIA VIVA)\n  * \"Nasce no Brasil: manifesto poético denuncia violências e exalta a resistência do povo\" (736 views, 29 likes, 91.0s, selo: HISTÓRIA VIVA)\n  * \"Onda REDPILL e ódio online: Big Techs precisam ser responsabilizadas\" (725 views, 30 likes, 75.0s, selo: ALERTA URGENTE)"
 }
