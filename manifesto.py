@@ -37,6 +37,7 @@ STATUS_PENDENTE = "pendente"
 STATUS_RENDERIZADO = "renderizado"
 STATUS_PUBLICADO = "publicado"
 STATUS_DESCARTADO = "descartado_afinidade"
+STATUS_EXPIRADO = "expirado_timing"
 
 # Nomes gerados pelo download.py: <YYYYMMDD>_<video_id_11_chars>_<titulo>.mp4
 _PADRAO_ID_YOUTUBE = re.compile(r"^\d{8}_([A-Za-z0-9_-]{11})_")

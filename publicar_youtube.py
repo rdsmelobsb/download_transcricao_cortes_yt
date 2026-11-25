@@ -227,8 +227,8 @@ def main() -> None:
     parser.add_argument(
         "--por-dia",
         type=int,
-        default=3,
-        help="Quantidade de Shorts por dia na grade automática (1 a 6; padrão: 3).",
+        default=6,
+        help="Quantidade de Shorts por dia na grade automática (1 a 6; padrão: 6).",
     )
     parser.add_argument(
         "--slots",
@@ -286,6 +286,12 @@ def main() -> None:
         default=75,
         help="Nota mínima de afinidade editorial (0-100) para publicar no YouTube (padrão: 75).",
     )
+    parser.add_argument(
+        "--max-idade-dias",
+        type=int,
+        default=5,
+        help="Expira cortes renderizados mais antigos que N dias para não perder timing (padrão: 5; 0 desativa).",
+    )
 
     args = parser.parse_args()
 
@@ -317,6 +323,37 @@ def main() -> None:
     if fantasmas > 0:
         print(f"ℹ️  Ignorando {fantasmas} corte(s) com status 'renderizado' cujo arquivo .mp4 não existe mais em cortes_prontos/.")
 
+    # Validade de timing (TTL): arquiva cortes velhos para não publicar notícia fora de hora
+    agora_dt = datetime.now()
+
+    def _idade_horas(tarefa: dict[str, Any]) -> float:
+        criado = tarefa.get("criado_em")
+        if not criado:
+            return 0.0
+        try:
+            dt = datetime.fromisoformat(str(criado))
+            return max(0.0, (agora_dt - dt).total_seconds() / 3600.0)
+        except ValueError:
+            return 0.0
+
+    expirados_ids: list[str] = []
+    if args.max_idade_dias > 0 and not args.ids:
+        limite_h = args.max_idade_dias * 24.0
+        ativos_timing = []
+        for t in renderizadas_com_arquivo:
+            if _idade_horas(t) > limite_h:
+                expirados_ids.append(t["id"])
+                if not args.simular:
+                    t["status"] = manifesto.STATUS_EXPIRADO
+            else:
+                ativos_timing.append(t)
+        if expirados_ids:
+            if not args.simular:
+                manifesto.salvar(tarefas)
+            acao_ttl = "expirariam" if args.simular else "expirado(s) e arquivado(s)"
+            print(f"⏳ Timing TTL ({args.max_idade_dias}d): {len(expirados_ids)} corte(s) antigo(s) {acao_ttl} ({manifesto.STATUS_EXPIRADO}).")
+        renderizadas_com_arquivo = ativos_timing
+
     # Portão editorial antes da publicação (bloqueia cortes com baixa afinidade ou FORA_DO_NICHO)
     def _passa_afinidade_yt(tarefa: dict[str, Any]) -> bool:
         if args.ids:
@@ -333,11 +370,13 @@ def main() -> None:
     if barrados_afinidade > 0:
         print(f"🛡️  Portão editorial: {barrados_afinidade} corte(s) retido(s) por afinidade < {args.min_afinidade}/100.")
 
-    # Prioriza os cortes mais alinhados (60% afinidade editorial + 40% packaging CTR)
+    # Prioriza Frescor + Afinidade + Packaging CTR (40% frescor + 40% afinidade + 20% packaging)
     def _score_prioridade_yt(tarefa: dict[str, Any]) -> tuple[float, str]:
+        idade_h = _idade_horas(tarefa)
+        frescor = max(0.0, 100.0 - idade_h * 0.75)
         afin = float(tarefa.get("nota_afinidade") if tarefa.get("nota_afinidade") is not None else 80)
         pack = float(tarefa.get("packaging_score") if tarefa.get("packaging_score") is not None else 85)
-        return (round(0.6 * afin + 0.4 * pack, 2), str(tarefa.get("criado_em", "")))
+        return (round(0.40 * frescor + 0.40 * afin + 0.20 * pack, 2), str(tarefa.get("criado_em", "")))
 
     renderizadas.sort(key=_score_prioridade_yt, reverse=True)
 

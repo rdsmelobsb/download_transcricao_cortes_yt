@@ -86,7 +86,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Pipeline diário automatizado do YouTube Shorts.")
     parser.add_argument("--modo", default="5", help="Modo de corte FFmpeg (padrão: 5 = vertical_tela_cheia).")
     parser.add_argument("--modelo-whisper", default="base", help="Modelo Whisper para transcrição (padrão: base).")
-    parser.add_argument("--por-dia", type=int, default=3, help="Slots por dia na grade YouTube (padrão: 3).")
+    parser.add_argument("--por-dia", type=int, default=6, help="Slots por dia na grade YouTube (padrão: 6 = 08:30, 11:30, 14:30, 17:30, 20:00, 22:30).")
     parser.add_argument("--limite", type=int, default=3, help="Máximo de uploads por execução (padrão: 3 -> 2x/dia = 6 cota diária).")
     parser.add_argument("--sem-metricas", action="store_true", help="Pula a auditoria inicial de métricas.")
     parser.add_argument("--simular", action="store_true", help="Executa o upload final em modo --simular (dry-run).")

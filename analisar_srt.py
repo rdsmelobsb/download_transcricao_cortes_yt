@@ -333,7 +333,11 @@ def gravar_kit_publicacao(tarefas: list[dict[str, Any]]) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     abertos = [
         t for t in tarefas
-        if t.get("status") not in (manifesto.STATUS_PUBLICADO, manifesto.STATUS_DESCARTADO)
+        if t.get("status") not in (
+            manifesto.STATUS_PUBLICADO,
+            manifesto.STATUS_DESCARTADO,
+            manifesto.STATUS_EXPIRADO,
+        )
     ]
     KIT_PUBLICACAO_MD_FILE.write_text(
         formatar_kit_publicacao_markdown(abertos),
