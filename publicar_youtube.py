@@ -280,6 +280,12 @@ def main() -> None:
         action="store_true",
         help="Exibe os cortes futuros já agendados no manifesto e encerra.",
     )
+    parser.add_argument(
+        "--min-afinidade",
+        type=int,
+        default=75,
+        help="Nota mínima de afinidade editorial (0-100) para publicar no YouTube (padrão: 75).",
+    )
 
     args = parser.parse_args()
 
@@ -306,13 +312,37 @@ def main() -> None:
         t for t in tarefas
         if t.get("status") == manifesto.STATUS_RENDERIZADO
     ]
-    renderizadas = [t for t in todas_renderizadas if localizar_arquivo_video(t) is not None]
-    fantasmas = len(todas_renderizadas) - len(renderizadas)
+    renderizadas_com_arquivo = [t for t in todas_renderizadas if localizar_arquivo_video(t) is not None]
+    fantasmas = len(todas_renderizadas) - len(renderizadas_com_arquivo)
     if fantasmas > 0:
         print(f"ℹ️  Ignorando {fantasmas} corte(s) com status 'renderizado' cujo arquivo .mp4 não existe mais em cortes_prontos/.")
 
+    # Portão editorial antes da publicação (bloqueia cortes com baixa afinidade ou FORA_DO_NICHO)
+    def _passa_afinidade_yt(tarefa: dict[str, Any]) -> bool:
+        if args.ids:
+            return True  # Seleção explícita por --id sempre respeita o comando manual
+        if tarefa.get("categoria_editorial") == "FORA_DO_NICHO":
+            return False
+        nota = tarefa.get("nota_afinidade")
+        if nota is None:
+            return True  # Cortes legados (anteriores ao portão editorial) seguem liberados
+        return int(nota) >= args.min_afinidade
+
+    renderizadas = [t for t in renderizadas_com_arquivo if _passa_afinidade_yt(t)]
+    barrados_afinidade = len(renderizadas_com_arquivo) - len(renderizadas)
+    if barrados_afinidade > 0:
+        print(f"🛡️  Portão editorial: {barrados_afinidade} corte(s) retido(s) por afinidade < {args.min_afinidade}/100.")
+
+    # Prioriza os cortes mais alinhados (60% afinidade editorial + 40% packaging CTR)
+    def _score_prioridade_yt(tarefa: dict[str, Any]) -> tuple[float, str]:
+        afin = float(tarefa.get("nota_afinidade") if tarefa.get("nota_afinidade") is not None else 80)
+        pack = float(tarefa.get("packaging_score") if tarefa.get("packaging_score") is not None else 85)
+        return (round(0.6 * afin + 0.4 * pack, 2), str(tarefa.get("criado_em", "")))
+
+    renderizadas.sort(key=_score_prioridade_yt, reverse=True)
+
     if not renderizadas:
-        print("⚠️ Nenhum corte com status 'renderizado' encontrado no manifesto!")
+        print("⚠️ Nenhum corte elegível com status 'renderizado' encontrado no manifesto!")
         print("-> Execute primeiro: python cortes.py para gerar os arquivos de vídeo.")
         sys.exit(0)
 
@@ -329,7 +359,9 @@ def main() -> None:
         print("       CORTES PRONTOS PARA POSTAR NO YOUTUBE       ")
         print("===================================================")
         for idx, t in enumerate(renderizadas, start=1):
-            print(f"[{idx}] {t['id']} (perfil {t.get('horario_sugerido', '11:30')}): {t['title']}")
+            afin_txt = f" | afin {t['nota_afinidade']}/100" if t.get("nota_afinidade") is not None else ""
+            cat_txt = f" [{t['categoria_editorial']}]" if t.get("categoria_editorial") else ""
+            print(f"[{idx}] {t['id']} ({t.get('horario_sugerido', '11:30')}{afin_txt}){cat_txt}: {t['title']}")
         print("===================================================")
         print(f"Grade ativa ({len(grade)}/dia): {', '.join(grade)} | Respiro mínimo: {args.intervalo_min} min")
         print("Opções:")

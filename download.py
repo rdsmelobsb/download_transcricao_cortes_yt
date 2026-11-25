@@ -1,5 +1,6 @@
 import argparse
 import json
+import unicodedata
 import uuid
 from pathlib import Path
 from typing import Optional
@@ -53,11 +54,25 @@ def _opcoes_base_ydl(output_template: str) -> dict:
     return ydl_opts
 
 
+def _normalizar_texto(texto: str) -> str:
+    """Remove acentos e converte para minúsculas para comparação editorial segura."""
+    sem_acento = unicodedata.normalize("NFKD", texto or "").encode("ascii", "ignore").decode("ascii")
+    return sem_acento.lower().strip()
+
+
 def criar_filtro_video(
     duracao_min: Optional[int] = None,
     duracao_max: Optional[int] = None,
+    palavras_bloqueadas: Optional[list[str]] = None,
+    palavras_obrigatorias: Optional[list[str]] = None,
 ):
-    """Cria uma função match_filter para o yt-dlp ignorar lives e filtrar por duração."""
+    """
+    Cria uma função match_filter para o yt-dlp ignorar lives, filtrar por duração
+    e barrar vídeos fora da linha editorial (blacklist/whitelist no título) antes do download.
+    """
+    bloqueadas_norm = [_normalizar_texto(p) for p in (palavras_bloqueadas or []) if p and p.strip()]
+    obrigatorias_norm = [_normalizar_texto(p) for p in (palavras_obrigatorias or []) if p and p.strip()]
+
     def _filtro(info: dict, *, incomplete: bool) -> Optional[str]:
         if incomplete:
             return None
@@ -71,6 +86,15 @@ def criar_filtro_video(
                 return f"Ignorado: duração ({duracao}s) menor que o mínimo ({duracao_min}s)."
             if duracao_max is not None and duracao > duracao_max:
                 return f"Ignorado: duração ({duracao}s) maior que o máximo ({duracao_max}s)."
+
+        titulo_norm = _normalizar_texto(info.get("title") or "")
+        if titulo_norm:
+            for termo in bloqueadas_norm:
+                if termo in titulo_norm:
+                    return f"Ignorado (filtro editorial — bloqueado '{termo}'): {info.get('title')}"
+
+            if obrigatorias_norm and not any(termo in titulo_norm for termo in obrigatorias_norm):
+                return f"Ignorado (filtro editorial — fora do nicho): {info.get('title')}"
 
         return None
 
@@ -150,6 +174,8 @@ def monitorar_canais(config_path: Path = CANAIS_FILE, dry_run: bool = False) -> 
         max_recentes = int(canal.get("max_recentes", 3))
         duracao_min = canal.get("duracao_min_segundos")
         duracao_max = canal.get("duracao_max_segundos")
+        palavras_bloqueadas = canal.get("palavras_bloqueadas") or []
+        palavras_obrigatorias = canal.get("palavras_obrigatorias") or []
 
         print(f"\n=== Verificando: {nome} (últimos {max_recentes} vídeos) ===")
 
@@ -163,7 +189,12 @@ def monitorar_canais(config_path: Path = CANAIS_FILE, dry_run: bool = False) -> 
             "ignoreerrors": True,
             "restrictfilenames": True,
             "download_archive": str(ARCHIVE_FILE),
-            "match_filter": criar_filtro_video(duracao_min, duracao_max),
+            "match_filter": criar_filtro_video(
+                duracao_min,
+                duracao_max,
+                palavras_bloqueadas=palavras_bloqueadas,
+                palavras_obrigatorias=palavras_obrigatorias,
+            ),
         })
 
         if dry_run:

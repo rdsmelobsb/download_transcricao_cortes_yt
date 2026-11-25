@@ -32,6 +32,15 @@ ENV_FILE = BASE_DIR / ".env"
 
 HORARIOS_ESTRATEGICOS = ["11:30", "17:30", "20:30"]
 MODELO_PADRAO = "gemini-2.5-flash"
+NOTA_AFINIDADE_MINIMA = 75
+CATEGORIAS_EDITORIAIS_VALIDAS = {
+    "UTILIDADE_PUBLICA",
+    "ECONOMIA_BOLSO",
+    "POLITICA_BRASILIA",
+    "DIREITOS_SOCIAIS",
+    "GEOPOLITICA_BRASIL",
+    "FORA_DO_NICHO",
+}
 
 
 # =====================================================================
@@ -186,10 +195,12 @@ def analisar_srt_com_gemini(
     srt_path: Path,
     max_cortes: int = 3,
     modelo_nome: str = MODELO_PADRAO,
+    min_afinidade: int = NOTA_AFINIDADE_MINIMA,
 ) -> list[dict[str, Any]]:
     """
     Envia a transcrição SRT anotada ao Gemini aplicando integralmente
-    a diretriz editorial do canal 'Política Direta' (YouTube Shorts e Kwai).
+    a diretriz editorial do canal 'Política Direta' (YouTube Shorts e Kwai),
+    incluindo o Portão de Afinidade Editorial com poder de veto.
     """
     conteudo_srt = srt_path.read_text(encoding="utf-8", errors="replace")
     srt_anotado = preparar_srt_com_segundos(conteudo_srt)
@@ -221,6 +232,9 @@ def analisar_srt_com_gemini(
     if not isinstance(dados, list):
         raise ValueError(f"Resposta inesperada da API para '{srt_path.name}'.")
 
+    if not dados:
+        return []
+
     # Ordena pela ordem sugerida (1, 2, 3) caso o modelo retorne fora de ordem
     dados_ordenados = sorted(
         dados[:max_cortes],
@@ -239,6 +253,18 @@ def analisar_srt_com_gemini(
         if horario not in HORARIOS_ESTRATEGICOS:
             horario = horario_padrao
 
+        try:
+            nota_afin = max(0, min(100, int(round(float(item.get("nota_afinidade", 80))))))
+        except (TypeError, ValueError):
+            nota_afin = 80
+
+        categoria = str(item.get("categoria_editorial", "POLITICA_BRASILIA")).strip().upper()
+        if categoria not in CATEGORIAS_EDITORIAIS_VALIDAS:
+            categoria = "POLITICA_BRASILIA"
+
+        justificativa = str(item.get("justificativa_afinidade", "")).strip()
+        aprovado = nota_afin >= min_afinidade and categoria != "FORA_DO_NICHO"
+
         cortes_normalizados.append({
             "horario_sugerido": horario,
             "nome": limpar_nome_curto(str(item.get("nome", f"Corte {idx}"))),
@@ -249,9 +275,14 @@ def analisar_srt_com_gemini(
             "titulo_capa": str(item.get("titulo_capa", "")).strip(),
             "texto_publicacao": str(item.get("texto_publicacao", "")).strip(),
             "hashtags": normalizar_hashtags(item.get("hashtags")),
+            "nota_afinidade": nota_afin,
+            "categoria_editorial": categoria,
+            "justificativa_afinidade": justificativa,
+            "status": manifesto.STATUS_PENDENTE if aprovado else manifesto.STATUS_DESCARTADO,
         })
 
-    validador_packaging.imprimir_relatorio_lote(cortes_normalizados)
+    if cortes_normalizados:
+        validador_packaging.imprimir_relatorio_lote(cortes_normalizados)
     return cortes_normalizados
 
 
@@ -298,9 +329,12 @@ def formatar_kit_publicacao_markdown(tarefas: list[dict[str, Any]]) -> str:
 
 
 def gravar_kit_publicacao(tarefas: list[dict[str, Any]]) -> None:
-    """Regenera cortes_prontos/kit_publicacao.md com os cortes ainda não publicados."""
+    """Regenera cortes_prontos/kit_publicacao.md com os cortes ativos ainda não publicados."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    abertos = [t for t in tarefas if t.get("status") != manifesto.STATUS_PUBLICADO]
+    abertos = [
+        t for t in tarefas
+        if t.get("status") not in (manifesto.STATUS_PUBLICADO, manifesto.STATUS_DESCARTADO)
+    ]
     KIT_PUBLICACAO_MD_FILE.write_text(
         formatar_kit_publicacao_markdown(abertos),
         encoding="utf-8",
@@ -423,6 +457,12 @@ def main() -> None:
         default=MODELO_PADRAO,
         help=f"Modelo Gemini a utilizar (padrão: {MODELO_PADRAO}).",
     )
+    parser.add_argument(
+        "--min-afinidade",
+        type=int,
+        default=NOTA_AFINIDADE_MINIMA,
+        help=f"Nota mínima de afinidade editorial (0-100) para aprovar um corte (padrão: {NOTA_AFINIDADE_MINIMA}).",
+    )
 
     args = parser.parse_args()
     configurar_api_gemini()
@@ -459,7 +499,9 @@ def main() -> None:
         sys.exit(1)
 
     novos_cortes = 0
-    print(f"\n🤖 Iniciando curadoria 'Política Direta' com o modelo '{args.modelo}'...\n")
+    cortes_descartados = 0
+    videos_vetados = 0
+    print(f"\n🤖 Iniciando curadoria 'Política Direta' com o modelo '{args.modelo}' (afinidade mín.: {args.min_afinidade}/100)...\n")
 
     for srt_path in alvos:
         print(f"📄 Analisando: {srt_path.name} ...")
@@ -468,13 +510,16 @@ def main() -> None:
                 srt_path=srt_path,
                 max_cortes=args.max_cortes,
                 modelo_nome=args.modelo,
+                min_afinidade=args.min_afinidade,
             )
         except Exception as e:
             print(f" ❌ Erro ao analisar '{srt_path.name}': {e}\n")
             continue
 
         if not cortes_gerados:
-            print(f" ⚠️ Nenhum corte retornado para '{srt_path.name}'.\n")
+            print(f" 🚫 Vídeo vetado pela curadoria editorial (sem afinidade com o canal Política Direta).\n")
+            registrar_srt_analisado(srt_path.name)
+            videos_vetados += 1
             continue
 
         video_path = srt_path.with_suffix(".mp4").name
@@ -490,26 +535,41 @@ def main() -> None:
                 "substituídos pela nova análise (os arquivos em cortes_prontos/ foram mantidos)."
             )
 
-        for t in (x for x in tarefas if x["video_path"] == video_path and x["status"] == manifesto.STATUS_PENDENTE):
+        for t in (x for x in tarefas if x["video_path"] == video_path and x["status"] in (manifesto.STATUS_PENDENTE, manifesto.STATUS_DESCARTADO)):
             duracao = round(t["end"] - t["start"], 1)
-            print(
-                f"   ✅ Corte {t['id']} ({duracao}s | {t['horario_sugerido']}): {t['nome']}\n"
-                f"      📌 Título: {t['title']}\n"
-                f"      🖼️  Capa  : {t['titulo_capa']}\n"
-                f"      #️⃣  Tags  : {t['hashtags']}"
-            )
-            novos_cortes += 1
+            afin = t.get("nota_afinidade", "-")
+            cat = t.get("categoria_editorial", "-")
+            just = t.get("justificativa_afinidade", "")
+            if t["status"] == manifesto.STATUS_DESCARTADO:
+                print(
+                    f"   🚫 Descartado {t['id']} (afinidade {afin}/100 | {cat}): {t['title']}\n"
+                    f"      💬 Motivo: {just or 'Abaixo do corte editorial mínimo'}"
+                )
+                cortes_descartados += 1
+            else:
+                print(
+                    f"   ✅ Corte {t['id']} ({duracao}s | {t['horario_sugerido']} | afin {afin}/100 | {cat}): {t['nome']}\n"
+                    f"      📌 Título: {t['title']}\n"
+                    f"      🖼️  Capa  : {t['titulo_capa']}\n"
+                    f"      #️⃣  Tags  : {t['hashtags']}"
+                )
+                novos_cortes += 1
 
         registrar_srt_analisado(srt_path.name)
         print()
 
     if not novos_cortes:
+        if videos_vetados > 0 or cortes_descartados > 0:
+            print("===================================================")
+            print(f"🛡️  Portão editorial ativo: {videos_vetados} vídeo(s) vetado(s) | {cortes_descartados} corte(s) descartado(s) por baixa afinidade.")
+            print("===================================================")
+            sys.exit(0)
         print("⚠️ Nenhuma tarefa de corte foi gerada.")
         sys.exit(1)
 
     gravar_kit_publicacao(tarefas)
     print("===================================================")
-    print(f"🎯 {novos_cortes} corte(s) 'Política Direta' gravado(s) com sucesso!")
+    print(f"🎯 {novos_cortes} corte(s) 'Política Direta' aprovado(s) | 🚫 {cortes_descartados} descartado(s) | 🛑 {videos_vetados} vídeo(s) vetado(s)")
     print(f"📦 Manifesto         : {manifesto.MANIFESTO_FILE}")
     print(f"📋 Kit de Publicação : {KIT_PUBLICACAO_MD_FILE}")
     print("===================================================")

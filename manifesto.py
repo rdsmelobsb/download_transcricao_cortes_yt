@@ -36,6 +36,7 @@ MANIFESTO_LEGADO_FILE = TEMP_DIR / "tarefas_corte.legacy.json"
 STATUS_PENDENTE = "pendente"
 STATUS_RENDERIZADO = "renderizado"
 STATUS_PUBLICADO = "publicado"
+STATUS_DESCARTADO = "descartado_afinidade"
 
 # Nomes gerados pelo download.py: <YYYYMMDD>_<video_id_11_chars>_<titulo>.mp4
 _PADRAO_ID_YOUTUBE = re.compile(r"^\d{8}_([A-Za-z0-9_-]{11})_")
@@ -181,7 +182,7 @@ def substituir_cortes_do_video(
     offset = len(publicados)
     novas = []
     for i, corte in enumerate(cortes, start=1):
-        novas.append({
+        item = {
             "id": gerar_id(video_path, offset + i),
             "ordem": i,
             "horario_sugerido": corte["horario_sugerido"],
@@ -193,10 +194,19 @@ def substituir_cortes_do_video(
             "titulo_capa": corte.get("titulo_capa", ""),
             "texto_publicacao": corte.get("texto_publicacao", ""),
             "hashtags": corte.get("hashtags", ""),
-            "status": STATUS_PENDENTE,
+            "status": corte.get("status", STATUS_PENDENTE),
             "criado_em": agora_iso(),
             "arquivo_final": None,
             "modo": None,
-        })
+        }
+        for campo_extra in (
+            "nota_afinidade",
+            "categoria_editorial",
+            "justificativa_afinidade",
+            "packaging_score",
+        ):
+            if campo_extra in corte and corte[campo_extra] is not None:
+                item[campo_extra] = corte[campo_extra]
+        novas.append(item)
 
     return restantes + novas, sobrescritas

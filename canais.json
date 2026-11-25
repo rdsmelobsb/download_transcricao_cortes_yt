@@ -5,7 +5,65 @@
     "ativo": true,
     "max_recentes": 3,
     "duracao_min_segundos": 180,
-    "duracao_max_segundos": null
+    "duracao_max_segundos": null,
+    "palavras_bloqueadas": [
+      "sem censura",
+      "consciencia negra",
+      "samba",
+      "musica",
+      "show",
+      "novela",
+      "cinema",
+      "teatro",
+      "infantil",
+      "futebol",
+      "esporte",
+      "campeonato",
+      "receita",
+      "culinaria",
+      "turismo",
+      "coral",
+      "orquestra",
+      "documentario",
+      "carnaval",
+      "arte",
+      "literatura",
+      "poesia",
+      "homenagem",
+      "aniversario"
+    ],
+    "palavras_obrigatorias": [
+      "lula",
+      "governo",
+      "economia",
+      "politica",
+      "stf",
+      "congresso",
+      "senado",
+      "camara",
+      "ministro",
+      "imposto",
+      "salario",
+      "inss",
+      "sus",
+      "pix",
+      "dolar",
+      "inflacao",
+      "pe-de-meia",
+      "bolsa",
+      "orcamento",
+      "fiscal",
+      "trabalho",
+      "lei",
+      "trump",
+      "eua",
+      "petrobras",
+      "bndes",
+      "juros",
+      "reforma",
+      "banco central",
+      "brasilia"
+    ]
   },
   {
     "nome": "GOV.BR",
@@ -13,7 +71,19 @@
     "ativo": true,
     "max_recentes": 2,
     "duracao_min_segundos": 180,
-    "duracao_max_segundos": null
+    "duracao_max_segundos": null,
+    "palavras_bloqueadas": [
+      "homenagem",
+      "coral",
+      "aniversario",
+      "teatro",
+      "cinema",
+      "esporte",
+      "campeonato",
+      "folclore",
+      "carnaval",
+      "turismo cultural"
+    ]
   },
   {
     "nome": "CANAL DO LULA",
@@ -21,7 +91,12 @@
     "ativo": true,
     "max_recentes": 5,
     "duracao_min_segundos": 180,
-    "duracao_max_segundos": null
+    "duracao_max_segundos": null,
+    "palavras_bloqueadas": [
+      "coral",
+      "clipe musical",
+      "homenagem artistica"
+    ]
   },
   {
     "nome": "CAMARA DOS DEPUTADOS",
@@ -29,7 +104,25 @@
     "ativo": true,
     "max_recentes": 2,
     "duracao_min_segundos": 60,
-    "duracao_max_segundos": null
+    "duracao_max_segundos": null,
+    "palavras_bloqueadas": [
+      "sessao solene",
+      "homenagem",
+      "coral",
+      "aniversario",
+      "medalha",
+      "comenda",
+      "diploma",
+      "concurso cultural",
+      "exposicao",
+      "musica",
+      "orquestra",
+      "cinema",
+      "teatro",
+      "turismo",
+      "dia nacional",
+      "dia internacional"
+    ]
   },
   {
     "nome": "SENADO FEDERAL",
@@ -37,6 +130,24 @@
     "ativo": true,
     "max_recentes": 2,
     "duracao_min_segundos": 60,
-    "duracao_max_segundos": null
+    "duracao_max_segundos": null,
+    "palavras_bloqueadas": [
+      "sessao solene",
+      "homenagem",
+      "coral",
+      "aniversario",
+      "medalha",
+      "comenda",
+      "diploma",
+      "concurso cultural",
+      "exposicao",
+      "musica",
+      "orquestra",
+      "cinema",
+      "teatro",
+      "turismo",
+      "dia nacional",
+      "dia internacional"
+    ]
   }
 ]

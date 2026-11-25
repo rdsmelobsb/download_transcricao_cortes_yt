@@ -66,6 +66,15 @@ def calcular_score_kwai(tarefa: dict[str, Any]) -> float:
     if "grupo" in texto or "compartilhe" in texto:
         score += 5.0
 
+    # Bônus/penalidade por afinidade editorial e packaging CTR
+    nota_afin = tarefa.get("nota_afinidade")
+    if nota_afin is not None:
+        score += (float(nota_afin) - 75.0) * 0.8
+
+    pack_score = tarefa.get("packaging_score")
+    if pack_score is not None:
+        score += (float(pack_score) - 80.0) * 0.3
+
     return round(score, 1)
 
 
@@ -531,6 +540,8 @@ def main() -> None:
         t for t in tarefas
         if t.get("status") in [manifesto.STATUS_RENDERIZADO, manifesto.STATUS_PUBLICADO]
         and not t.get("publicado_kwai", False)
+        and t.get("categoria_editorial") != "FORA_DO_NICHO"
+        and (t.get("nota_afinidade") is None or int(t.get("nota_afinidade")) >= 75)
         and localizar_arquivo_corte(t) is not None
     ]
 
