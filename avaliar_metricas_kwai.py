@@ -478,7 +478,7 @@ def salvar_relatorio_kwai(padroes: dict[str, Any]) -> None:
     linhas = [
         "# 📈 Relatório de Desempenho e Inteligência — Kwai",
         "",
-        f"> **Perfil:** Política Direta (`rdsdogsLover`) | **Data da Auditoria:** {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",
+        f"> **Perfil:** Mathilda News (`rdsdogsLover`) | **Data da Auditoria:** {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",
         "",
         "---",
         "",

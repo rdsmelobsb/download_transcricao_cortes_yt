@@ -1,5 +1,5 @@
 """
-Pipeline Automatizado do Kwai via Android ADB — Política Direta.
+Pipeline Automatizado do Kwai via Android ADB — Mathilda News.
 
 Orquestra as etapas do Kwai (conectando automaticamente no celular USB ou BlueStacks):
   1. Publicação dos TOP N melhores cortes pendentes (publicar_kwai.py --top 3 --sim)

@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "cortes_prontos"
 KWAI_PACKAGE = "com.kwai.video"
 KWAI_SHARE_ACTIVITY = "com.kwai.video/com.kscorp.oversea.platform.router.ui.UriRouterActivity"
-ANDROID_DEST_DIR = "/sdcard/Movies/PoliticaDireta"
+ANDROID_DEST_DIR = "/sdcard/Movies/MathildaNews"
 
 
 # =====================================================================
@@ -247,7 +247,7 @@ def enviar_video_para_android(serial: str, caminho_local: Path) -> tuple[str, st
 
 
 def remover_video_temporario_android(serial: str, destino_remoto: str) -> None:
-    """Remove o .mp4 temporário da pasta PoliticaDireta no celular após publicar."""
+    """Remove o .mp4 temporário da pasta MathildaNews no celular após publicar."""
     adb_exe = adbutils.adb_path()
     subprocess.run(
         [adb_exe, "-s", serial, "shell", "rm", "-f", destino_remoto],
@@ -261,10 +261,14 @@ def remover_video_temporario_android(serial: str, destino_remoto: str) -> None:
 # =====================================================================
 
 def formatar_legenda_kwai(tarefa: dict[str, Any]) -> str:
-    """Prepara o texto de publicação e hashtags otimizado para o Kwai."""
+    """Prepara o texto de publicação e hashtags otimizado para o canal Mathilda News no Kwai."""
     titulo = tarefa.get("title", "")
     capa = tarefa.get("titulo_capa", "")
-    hashtags = tarefa.get("hashtags", "#PolíticaDireta #Notícias #Brasil")
+    hashtags_brutas = tarefa.get("hashtags", "#MathildaNews #Notícias #Brasil")
+    # Adapta a hashtag principal do YouTube (#PolíticaDireta) para a marca do Kwai (#MathildaNews)
+    hashtags = re.sub(r"#pol[ií]ticadireta\b", "#MathildaNews", hashtags_brutas, flags=re.IGNORECASE)
+    if "#mathildanews" not in hashtags.lower():
+        hashtags = f"#MathildaNews {hashtags}".strip()
 
     partes = []
     if capa:
