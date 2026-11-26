@@ -526,6 +526,11 @@ def main() -> None:
         action="store_true",
         help="Confirma automaticamente o envio sem pedir input no terminal.",
     )
+    parser.add_argument(
+        "--ids",
+        nargs="+",
+        help="Lista de IDs específicos para postar (ex: --ids OE3peSOZkmM_1 AQ3eQsPH_r4_3).",
+    )
 
     args = parser.parse_args()
     device, serial = conectar_dispositivo(args.serial)
@@ -540,20 +545,38 @@ def main() -> None:
         print(f"❌ Erro ao ler manifesto: {e}")
         sys.exit(1)
 
-    disponiveis = [
-        t for t in tarefas
-        if t.get("status") in [manifesto.STATUS_RENDERIZADO, manifesto.STATUS_PUBLICADO]
-        and not t.get("publicado_kwai", False)
-        and t.get("categoria_editorial") != "FORA_DO_NICHO"
-        and (t.get("nota_afinidade") is None or int(t.get("nota_afinidade")) >= 75)
-        and localizar_arquivo_corte(t) is not None
-    ]
+    if args.ids:
+        por_id = {t.get("id"): t for t in tarefas}
+        selecionadas = []
+        for cid in args.ids:
+            t = por_id.get(cid)
+            if not t:
+                print(f"⚠️ Corte '{cid}' não encontrado no manifesto.")
+                continue
+            if localizar_arquivo_corte(t) is None:
+                print(f"⚠️ Arquivo .mp4 do corte '{cid}' não encontrado em cortes_prontos/.")
+                continue
+            t["_kwai_score"] = calcular_score_kwai(t)
+            selecionadas.append(t)
 
-    if not disponiveis:
-        print("⚠️ Nenhum corte renderizado pendente de publicação no Kwai!")
-        sys.exit(0)
+        if not selecionadas:
+            print("⚠️ Nenhum dos IDs informados está disponível para envio no Kwai.")
+            sys.exit(0)
+    else:
+        disponiveis = [
+            t for t in tarefas
+            if t.get("status") in [manifesto.STATUS_RENDERIZADO, manifesto.STATUS_PUBLICADO]
+            and not t.get("publicado_kwai", False)
+            and t.get("categoria_editorial") != "FORA_DO_NICHO"
+            and (t.get("nota_afinidade") is None or int(t.get("nota_afinidade")) >= 75)
+            and localizar_arquivo_corte(t) is not None
+        ]
 
-    selecionadas = selecionar_melhores_cortes(disponiveis, quantidade=args.top)
+        if not disponiveis:
+            print("⚠️ Nenhum corte renderizado pendente de publicação no Kwai!")
+            sys.exit(0)
+
+        selecionadas = selecionar_melhores_cortes(disponiveis, quantidade=args.top)
 
     print("===================================================")
     print("      RANKING DE MELHORES CORTES PARA O KWAI       ")
