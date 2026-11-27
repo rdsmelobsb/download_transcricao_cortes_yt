@@ -285,6 +285,71 @@ def formatar_legenda_kwai(tarefa: dict[str, Any]) -> str:
     return "\n\n".join(partes)[:500]
 
 
+def _tela_publicacao_aberta(device) -> bool:
+    """Verifica se o Kwai ainda está na tela de publicação (antes do envio efetivo)."""
+    try:
+        return (
+            device(text="Editar capa").exists
+            or device(textContains="Adicionar local").exists
+            or device(textContains="Permitir duetos").exists
+        )
+    except Exception:
+        return False
+
+
+def _clicar_botao_publicar(device, timeout: float = 8.0) -> bool:
+    """
+    Localiza e aciona o botão laranja 'Publicar' na parte inferior da tela.
+    Evita clicar por engano no título 'Publicar' da barra superior.
+    """
+    fim = time.time() + timeout
+    info_tela = device.info
+    altura_tela = info_tela.get("displayHeight", 1920)
+    limite_superior = int(altura_tela * 0.45)
+
+    while time.time() < fim:
+        # 1. Tenta pelos resource-ids conhecidos do botão inferior
+        for rid in ("com.kwai.video.basis:id/post", "com.kwai.video.ca_product:id/post"):
+            el = device(resourceId=rid)
+            if el.exists:
+                bounds = el.info.get("bounds", {})
+                if bounds.get("top", 0) >= limite_superior:
+                    cx = (bounds["left"] + bounds["right"]) // 2
+                    cy = (bounds["top"] + bounds["bottom"]) // 2
+                    device.click(cx, cy)
+                    return True
+
+        # 2. Fallback por texto: pega especificamente o elemento 'Publicar' mais abaixo na tela
+        candidatos = []
+        for match in device(text="Publicar"):
+            try:
+                bounds = match.info.get("bounds", {})
+                if bounds.get("top", 0) >= limite_superior:
+                    candidatos.append(bounds)
+            except Exception:
+                continue
+
+        if not candidatos:
+            for match in device(textContains="Publicar"):
+                try:
+                    bounds = match.info.get("bounds", {})
+                    if bounds.get("top", 0) >= limite_superior:
+                        candidatos.append(bounds)
+                except Exception:
+                    continue
+
+        if candidatos:
+            # Escolhe o mais inferior (botão laranja no rodapé)
+            alvo = max(candidatos, key=lambda b: b.get("bottom", 0))
+            cx = (alvo["left"] + alvo["right"]) // 2
+            cy = (alvo["top"] + alvo["bottom"]) // 2
+            device.click(cx, cy)
+            return True
+
+        time.sleep(0.5)
+    return False
+
+
 def clicar_por_id_ou_texto(
     device,
     resource_id: Optional[str] = None,
@@ -462,15 +527,20 @@ def publicar_no_app_kwai(
         print("⏸️  Modo --preparar ativo: revise na tela do celular e toque em 'Publicar' manualmente.")
         return True, destino_remoto
 
-    # 8. Clica no botão 'Publicar'
-    if clicar_por_id_ou_texto(
-        device,
-        resource_id="com.kwai.video.basis:id/post",
-        textos=["Publicar"],
-        timeout=8.0,
-    ):
-        print("✅ Botão 'Publicar' acionado no Kwai! Aguardando envio...")
-        time.sleep(10)
+    # 8. Clica no botão inferior 'Publicar' (evitando o cabeçalho 'Publicar') e valida saída da tela
+    if _clicar_botao_publicar(device, timeout=8.0):
+        time.sleep(3.5)
+        if _tela_publicacao_aberta(device):
+            # Uma segunda tentativa caso o primeiro toque tenha apenas fechado algum foco
+            _clicar_botao_publicar(device, timeout=4.0)
+            time.sleep(4.0)
+
+        if _tela_publicacao_aberta(device):
+            print("❌ Botão 'Publicar' não confirmou o envio (tela de publicação continuou aberta). Corte NÃO marcado como publicado.")
+            return False, destino_remoto
+
+        print("✅ Botão 'Publicar' acionado e envio confirmado no Kwai! Aguardando processamento...")
+        time.sleep(6)
         remover_video_temporario_android(serial, destino_remoto)
         return True, destino_remoto
 
